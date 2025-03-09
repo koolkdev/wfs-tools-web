@@ -6,10 +6,15 @@ A modern web interface for exploring Wii U File System (WFS) images, built with 
 
 ## Features
 
-- **Dependency Management**: Uses Git submodules for wfslib and vcpkg
-- **Build Configuration**: CMake presets for debug and release builds
-- **Modern Web Stack**: TypeScript, webpack, and npm for development
-- **File System Access API**: Process WFS images efficiently with streaming
+- **Browser-Based WFS Explorer**: View and extract files directly in your web browser
+- **Streaming Processing**: Uses File System Access API for efficient handling of large WFS images
+- **Encryption Support**: Handles plain (unencrypted), MLC, and USB encrypted WFS images
+- **Directory Navigation**: Browse WFS directory structure with an intuitive file explorer interface
+- **File Extraction**: Extract individual files or entire directories to your local file system
+- **Content Viewer**: View file contents with hex and text viewing options
+- **WebAssembly Performance**: C++ core for maximum performance with TypeScript frontend
+- **Modern Web Stack**: Built with TypeScript, Webpack, and npm
+- **Dependency Management**: Uses Git submodules for wfslib, vcpkg, and Emscripten SDK
 
 ## Prerequisites
 
@@ -40,47 +45,36 @@ npm install
 
 ## Building
 
-### 1. Set Up Emscripten
+### Simple All-in-One Build (Recommended)
 
-Make sure you have Emscripten SDK activated in your current shell:
-
-```bash
-# Activate Emscripten environment (adjust the path as needed)
-source /path/to/emsdk/emsdk_env.sh
-```
-
-### 2. Build Options
-
-#### Build Release Version (Default)
+Build everything with a single command:
 
 ```bash
-npm run build:wasm
-# or explicitly:
-npm run build:wasm:release
-```
-
-#### Build Debug Version
-
-```bash
-npm run build:wasm:debug
-```
-
-### 3. Build the TypeScript Frontend
-
-```bash
-npm run build
-```
-
-### 4. All-in-One Build
-
-For convenience, you can run all build steps with a single command:
-
-```bash
-# Release build
+# Release build (optimized for production)
 npm run build:all
+```
 
-# Debug build
+That's it! This handles the Emscripten environment setup, WebAssembly compilation, and TypeScript frontend build.
+
+### Advanced Build Options
+
+If you need a debug build with source maps for development:
+
+```bash
 npm run build:all:debug
+```
+
+For more granular control, you can run individual build steps:
+
+```bash
+# Initialize Emscripten (first time only)
+npm run setup:emscripten
+
+# Build only the WebAssembly module
+npm run build:wasm
+
+# Build only the TypeScript frontend
+npm run build
 ```
 
 ### 5. Running the Application
@@ -109,18 +103,49 @@ npm run build:wasm && npm run dev
 
 ```
 wfs-tools-web/
-├── submodules/           # Git submodules
-│   ├── wfslib/           # WFS library
-│   └── vcpkg/            # Package manager
-├── cpp/                  # C++ source files
-│   ├── bindings.cpp      # Emscripten bindings
-│   └── CMakeLists.txt    # CMake configuration for bindings
+├── submodules/           # Git submodules (wfslib, vcpkg, emsdk)
+├── cpp/                  # C++ source files and bindings
 ├── src/                  # TypeScript source files
 ├── wasm/                 # WebAssembly output directory
+├── custom-triplets/      # Custom vcpkg triplets
 ├── CMakeLists.txt        # Main CMake configuration
-├── CMakePresets.json     # CMake presets configuration
-└── .gitmodules           # Git submodules configuration
+└── CMakePresets.json     # CMake presets configuration
 ```
+
+## Using the Application
+
+### Loading a WFS Image
+
+1. Select a WFS image file using the "Select WFS Image" button
+2. Choose the encryption type:
+   - **Plain**: No encryption (default)
+   - **MLC**: For MLC (internal storage) WFS images, requires an OTP file
+   - **USB**: For USB (external storage) WFS images, requires OTP and SEEPROM files
+3. If MLC or USB encryption is selected, provide the required key files
+4. Click "Load WFS Image" to process and open the image
+
+### Browsing Files
+
+- Navigate the directory structure in the left panel
+- Click on folders to navigate into them
+- Click on files to view their contents in the right panel
+- Use the parent directory link (..) to navigate up the directory structure
+
+### Viewing Files
+
+- Select a file to view its contents
+- Use the "Toggle Hex View" button to switch to hexadecimal view
+- Use the "Toggle Text View" button to switch to text view
+
+### Extracting Files
+
+1. Go to the "Extract" tab
+2. Select an output directory using the "Select Output Directory" button
+3. Configure extraction options:
+   - **Extract directories recursively**: Extract subdirectories and their contents
+   - **Preserve directory structure**: Maintain folder hierarchy in the output
+4. Use "Extract Current Directory" to extract the currently viewed directory
+5. Use "Extract Selected File" to extract only the currently selected file
 
 ## CMake Presets
 
@@ -129,29 +154,26 @@ This project uses CMake presets to simplify the build configuration:
 - **wasm-debug**: Debug build with optimization level O0 and source maps
 - **wasm-release**: Release build with optimization level O3
 
-## Using vcpkg
+## Security and Permissions
 
-The project is configured to use vcpkg for managing C++ dependencies. To add a package:
+This application uses the File System Access API which requires explicit user permission to access files. All file processing is done locally in your browser - no data is uploaded to any server.
 
-1. First, bootstrap vcpkg if you haven't already:
+## Browser Compatibility
 
-   ```bash
-   cd submodules/vcpkg
-   ./bootstrap-vcpkg.sh  # or bootstrap-vcpkg.bat on Windows
-   ```
+The application requires a modern browser that supports:
 
-2. Install the required package(s):
+- WebAssembly
+- File System Access API
+- Web Workers
+- SharedArrayBuffer with cross-origin isolation
 
-   ```bash
-   ./vcpkg install package-name:wasm
-   ```
+Recommended browsers:
 
-3. Add the package to the CMakeLists.txt:
-   ```cmake
-   find_package(package-name CONFIG REQUIRED)
-   target_link_libraries(wfslib-web PRIVATE package-name::package-name)
-   ```
+- Chrome 89+
+- Edge 89+
+- Opera 75+
+- Firefox 90+ (with some features enabled in about:config)
 
-## Customizing the Build
+## License
 
-Edit `CMakePresets.json` to customize build configurations such as optimization levels, debug information, and other Emscripten flags.
+MIT
