@@ -1,0 +1,65 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "wasm-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/submodules/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+        //"EMSCRIPTEN_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+        "VCPKG_TARGET_TRIPLET": "wasm32-emscripten-pthread"
+        //"VCPKG_C_FLAGS": "-pthread -matomics -mbulk-memory",
+        //"VCPKG_CXX_FLAGS": "-pthread -matomics -mbulk-memory"
+      },
+      "environment": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/custom-triplets"
+        //"EMCC_CFLAGS": "-pthread"
+      }
+    },
+    {
+      "name": "wasm-debug",
+      "displayName": "WebAssembly Debug",
+      "inherits": "wasm-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "EMSCRIPTEN_OPTIMIZATION_LEVEL": "-O0",
+        "EMSCRIPTEN_DEBUG_LEVEL": "3",
+        "EMSCRIPTEN_GENERATE_SOURCE_MAP": "ON"
+      }
+    },
+    {
+      "name": "wasm-release",
+      "displayName": "WebAssembly Release",
+      "inherits": "wasm-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "EMSCRIPTEN_OPTIMIZATION_LEVEL": "-O3",
+        "EMSCRIPTEN_DEBUG_LEVEL": "0",
+        "EMSCRIPTEN_GENERATE_SOURCE_MAP": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "wasm-debug",
+      "displayName": "WebAssembly Debug Build",
+      "configurePreset": "wasm-debug",
+      "targets": "wfslib-web"
+    },
+    {
+      "name": "wasm-release",
+      "displayName": "WebAssembly Release Build",
+      "configurePreset": "wasm-release",
+      "targets": "wfslib-web"
+    }
+  ]
+}

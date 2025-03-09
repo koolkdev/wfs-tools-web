@@ -1,0 +1,5 @@
+{
+  "name": "wfs-tools-web",
+  "version-string": "0.1.0-dev",
+  "dependencies": ["boost-dynamic-bitset", "boost-iostreams", "cryptopp"]
+}

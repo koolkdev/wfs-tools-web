@@ -1,0 +1,48 @@
+{
+  "name": "wfs-tools-web",
+  "version": "1.0.0",
+  "description": "Web interface for Wii U File System tools",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "NODE_ENV=production webpack build",
+    "dev": "NODE_ENV=development webpack serve",
+    "type-check": "tsc --noEmit",
+    "prepare": "git submodule update --init --recursive",
+    "setup:emscripten": "cd submodules/emsdk && ./emsdk install latest && ./emsdk activate latest",
+    "emconfigure:debug": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --preset=wasm-debug",
+    "emconfigure:release": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --preset=wasm-release",
+    "embuild:debug": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --build --preset=wasm-debug",
+    "embuild:release": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --build --preset=wasm-release",
+    "eminstall:debug": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --install build/wasm-debug",
+    "eminstall:release": "cd submodules/emsdk && . ./emsdk_env.sh && cd ../../ && cmake --install build/wasm-release",
+    "build:wasm:debug": "npm run emconfigure:debug && npm run embuild:debug && npm run eminstall:debug",
+    "build:wasm:release": "npm run emconfigure:release && npm run embuild:release && npm run eminstall:release",
+    "build:wasm": "npm run build:wasm:release",
+    "start": "http-server dist -a localhost -p 9000 --cors -c-1 -o -h '{\"Cross-Origin-Opener-Policy\": \"same-origin\", \"Cross-Origin-Embedder-Policy\": \"require-corp\"}'",
+    "build:all": "npm run build:wasm:release && npm run build",
+    "build:all:debug": "npm run build:wasm:debug && npm run build",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "keywords": [
+    "wfs",
+    "wiiu",
+    "filesystem",
+    "wasm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "copy-webpack-plugin": "^13.0.0",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "http-server": "^14.1.1",
+    "prettier": "^3.5.3",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.2",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
+  }
+}

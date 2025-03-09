@@ -1,0 +1,9 @@
+[submodule "submodules/wfslib"]
+	path = submodules/wfslib
+	url = https://github.com/koolkdev/wfslib.git
+[submodule "submodules/vcpkg"]
+	path = submodules/vcpkg
+	url = https://github.com/microsoft/vcpkg.git
+[submodule "submodules/emsdk"]
+	path = submodules/emsdk
+	url = https://github.com/emscripten-core/emsdk.git

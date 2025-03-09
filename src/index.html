@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WFS Explorer</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WFS Explorer</h1>
+
+      <div class="section">
+        <h2>Load WFS Image</h2>
+
+        <div class="api-note">
+          <strong>Note:</strong> This application uses the File System Access API for improved
+          performance with large files. Files are processed in a streaming fashion instead of being
+          fully loaded into memory.
+        </div>
+
+        <div class="file-input">
+          <label>WFS Image File:</label>
+          <button id="selectWfsFile">Select WFS Image</button>
+          <div id="selectedWfsFile" style="margin-top: 5px; font-style: italic">
+            No file selected
+          </div>
+        </div>
+
+        <div class="file-input">
+          <label>Encryption Type:</label>
+          <select id="encryptionType">
+            <option value="plain">Plain (No Encryption)</option>
+            <option value="mlc">MLC</option>
+            <option value="usb">USB</option>
+          </select>
+        </div>
+
+        <div id="mlcKeySection" style="display: none">
+          <div class="file-input">
+            <label>OTP File (For MLC):</label>
+            <button id="selectOtpFile">Select OTP File</button>
+            <div id="selectedOtpFile" style="margin-top: 5px; font-style: italic">
+              No file selected
+            </div>
+          </div>
+        </div>
+
+        <div id="usbKeySection" style="display: none">
+          <div class="file-input">
+            <label>OTP File (For USB):</label>
+            <button id="selectOtpFileUsb">Select OTP File</button>
+            <div id="selectedOtpFileUsb" style="margin-top: 5px; font-style: italic">
+              No file selected
+            </div>
+          </div>
+          <div class="file-input">
+            <label>SEEPROM File:</label>
+            <button id="selectSeepromFile">Select SEEPROM File</button>
+            <div id="selectedSeepromFile" style="margin-top: 5px; font-style: italic">
+              No file selected
+            </div>
+          </div>
+        </div>
+
+        <button id="loadButton" disabled>Load WFS Image</button>
+      </div>
+
+      <div id="progressSection" class="section" style="display: none">
+        <h2>Loading Progress</h2>
+        <progress id="progressBar" value="0" max="100"></progress>
+        <div id="progressStatus">Preparing...</div>
+      </div>
+
+      <div id="browserSection" class="section" style="display: none">
+        <h2>File Browser</h2>
+
+        <div class="tab-container">
+          <div class="tab active" id="browserTab">Browser</div>
+          <div class="tab" id="extractTab">Extract</div>
+          <div class="tab" id="infoTab">Info</div>
+        </div>
+
+        <div id="browserTabContent">
+          <div class="file-browser">
+            <div class="directory-tree" id="directoryTree">
+              <div class="loading">Loading directory structure...</div>
+            </div>
+            <div class="file-viewer" id="fileViewer">
+              <div class="loading">Select a file to view its contents</div>
+            </div>
+          </div>
+          <div class="actions" id="fileActions" style="display: none; margin-top: 10px">
+            <div class="btn-group">
+              <button id="downloadButton">Save Selected File</button>
+              <button id="hexViewButton" class="btn-secondary">Toggle Hex View</button>
+              <button id="textViewButton" class="btn-secondary">Toggle Text View</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="extractTabContent" style="display: none">
+          <h3>Extract Files</h3>
+          <p>Extract files from the WFS image to your local file system.</p>
+
+          <div class="file-input">
+            <label>Extraction Path:</label>
+            <button id="selectExtractionPath">Select Output Directory</button>
+            <div id="selectedExtractionPath" style="margin-top: 5px; font-style: italic">
+              No directory selected
+            </div>
+          </div>
+
+          <div class="file-input">
+            <label>Extract Options:</label>
+            <div>
+              <input type="checkbox" id="extractRecursive" checked />
+              <label for="extractRecursive" style="display: inline; font-weight: normal"
+                >Extract directories recursively</label
+              >
+            </div>
+            <div>
+              <input type="checkbox" id="extractPreserveStructure" checked />
+              <label for="extractPreserveStructure" style="display: inline; font-weight: normal"
+                >Preserve directory structure</label
+              >
+            </div>
+          </div>
+
+          <div style="margin-top: 10px">
+            <button id="extractCurrentDir">Extract Current Directory</button>
+            <button id="extractSelectedFile" class="btn-secondary">Extract Selected File</button>
+          </div>
+
+          <div id="extractionProgress" style="display: none; margin-top: 15px">
+            <h4>Extraction Progress</h4>
+            <progress id="extractProgressBar" value="0" max="100"></progress>
+            <div id="extractProgressStatus">Preparing...</div>
+            <div id="extractProgressDetails"></div>
+          </div>
+        </div>
+
+        <div id="infoTabContent" style="display: none">
+          <h3>WFS Image Information</h3>
+          <div id="wfsInfoContent" class="pre-wrap">Loading WFS information...</div>
+        </div>
+
+        <div class="status-bar">
+          <div id="currentPath">/</div>
+          <div id="selectionInfo"></div>
+        </div>
+      </div>
+
+      <div class="log-section" id="logSection">
+        <div class="info">Welcome to WFS Explorer. Select a WFS image file to begin.</div>
+      </div>
+    </div>
+  </body>
+</html>

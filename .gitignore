@@ -1,0 +1,19 @@
+# Ignore the build directory
+build/
+
+# Ignore the node_modules directory
+node_modules/
+
+# Ignore package-lock.json
+package-lock.json
+
+# Ignore the Visual Studio Code settings folder
+.vscode/
+
+# Ignore the dist directory
+dist/
+
+# Ignore the built wasm files
+wasm/wfslib_web.js
+wasm/wfslib_web.wasm
+wasm/wfslib_web.wasm.map
