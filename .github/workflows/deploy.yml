@@ -26,24 +26,18 @@ jobs:
     environment: ${{ github.event_name == 'pull_request' && '' || 'github-pages' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@latest
         with:
           submodules: 'recursive'
 
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@latest
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@latest
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v12
-        with:
-          version: 'latest'
-          actions-cache-folder: 'emsdk-cache'
 
       - name: Setup CMake
         uses: lukka/get-cmake@latest
@@ -51,16 +45,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Emscripten
+        run: npm run setup:emscripten
+
       - name: Build WebAssembly module
-        run: |
-          source ${{ github.workspace }}/submodules/emsdk/emsdk_env.sh
-          npm run build:wasm:release
+        run: npm run build:wasm:release
 
       - name: Build frontend
         run: npm run build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@latest
         with:
           path: './dist'
 
@@ -76,4 +71,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@latest
