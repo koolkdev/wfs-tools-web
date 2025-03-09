@@ -15,14 +15,7 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/submodules/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
-        //"EMSCRIPTEN_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
-        "VCPKG_TARGET_TRIPLET": "wasm32-emscripten-pthread"
-        //"VCPKG_C_FLAGS": "-pthread -matomics -mbulk-memory",
-        //"VCPKG_CXX_FLAGS": "-pthread -matomics -mbulk-memory"
-      },
-      "environment": {
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/custom-triplets"
-        //"EMCC_CFLAGS": "-pthread"
+        "VCPKG_TARGET_TRIPLET": "wasm32-emscripten"
       }
     },
     {

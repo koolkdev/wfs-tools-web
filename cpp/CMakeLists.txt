@@ -19,10 +19,10 @@ set(EMSCRIPTEN_BASE_FLAGS
     -sDISABLE_EXCEPTION_CATCHING=0
     -sEXPORT_ES6=1
     -sUSE_ES6_IMPORT_META=1
-    -sUSE_PTHREADS=1
+    -sUSE_PTHREADS=0
     -sPTHREAD_POOL_SIZE=4
     -sFILESYSTEM=0
-    -sENVIRONMENT='web,worker'
+    -sENVIRONMENT='web'
     -sASYNCIFY=1
     --bind
 )
@@ -43,7 +43,6 @@ string(REPLACE ";" " " EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_BASE_FLAGS}")
 add_executable(${PROJECT_NAME} ${BINDING_SOURCE})
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-target_compile_options(${PROJECT_NAME} PRIVATE -pthread)
 
 # Get include directories from wfslib
 get_property(wfs_include_dirs TARGET wfslib PROPERTY INCLUDE_DIRECTORIES)

@@ -27,8 +27,6 @@ if(DEFINED EMSCRIPTEN_GENERATE_SOURCE_MAP AND EMSCRIPTEN_GENERATE_SOURCE_MAP)
   add_link_options(--source-map-base ./)
 endif()
 
-add_compile_options(-pthread)
-
 # Add wfslib from submodule
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/submodules/wfslib" wfslib)
 
