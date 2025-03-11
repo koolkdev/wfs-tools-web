@@ -11,10 +11,46 @@ import {
   ButtonGroup,
   useTheme,
   CircularProgress,
+  CardContent,
+  Card,
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useDropzone } from 'react-dropzone';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
 import { useNavigate } from 'react-router-dom';
+
+const DropzoneCard = ({
+  title,
+  file,
+  getRootProps,
+  getInputProps,
+}: {
+  title: string;
+  file: File | null;
+  getRootProps: any;
+  getInputProps: any;
+}) => {
+  const theme = useTheme();
+
+  return (
+    <Card
+      {...getRootProps()}
+      sx={{
+        border: `2px dashed ${file ? theme.palette.success.main : theme.palette.primary.main}`,
+        cursor: 'pointer',
+        '&:hover': { backgroundColor: theme.palette.action.hover },
+      }}
+    >
+      <CardContent sx={{ textAlign: 'center' }}>
+        <input {...getInputProps()} />
+        <CloudUploadIcon fontSize="large" color="action" />
+        <Typography variant="subtitle1" sx={{ mt: 1 }}>
+          {file ? file.name : title}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
 const LoadWfsImagePage: React.FC = () => {
   const theme = useTheme();
@@ -134,76 +170,34 @@ const LoadWfsImagePage: React.FC = () => {
         <Grid container spacing={2}>
           {/* WFS Image Dropzone */}
           <Grid item xs={12}>
-            <div
-              {...getWfsRootProps()}
-              style={{
-                border: '2px dashed',
-                borderColor: wfsFileHandle
-                  ? theme.palette.success.main
-                  : theme.palette.primary.main,
-                borderRadius: '4px',
-                padding: '20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <input {...getWfsInputProps()} />
-              <Typography variant="body1" color="textSecondary" align="center">
-                {wfsFileHandle
-                  ? `Selected: ${wfsFileHandle.name}`
-                  : 'Drag & drop WFS Image, or click to select'}
-              </Typography>
-            </div>
+            <DropzoneCard
+              title="WFS Image"
+              file={wfsFileHandle}
+              getRootProps={getWfsRootProps}
+              getInputProps={getWfsInputProps}
+            />
           </Grid>
 
           {/* Conditional Key File Inputs */}
           {(encryptionType === 'mlc' || encryptionType === 'usb') && (
             <Grid item xs={encryptionType === 'usb' ? 6 : 12}>
-              <div
-                {...getOtpRootProps()}
-                style={{
-                  border: '2px dashed',
-                  borderColor: otpFileHandle
-                    ? theme.palette.success.main
-                    : theme.palette.primary.main,
-                  borderRadius: '4px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <input {...getOtpInputProps()} />
-                <Typography variant="body1" color="textSecondary" align="center">
-                  {otpFileHandle
-                    ? `Selected OTP: ${otpFileHandle.name}`
-                    : 'Drag & drop OTP File, or click to select'}
-                </Typography>
-              </div>
+              <DropzoneCard
+                title="OTP File"
+                file={otpFileHandle}
+                getRootProps={getOtpRootProps}
+                getInputProps={getOtpInputProps}
+              />
             </Grid>
           )}
 
           {encryptionType === 'usb' && (
             <Grid item xs={6}>
-              <div
-                {...getSeepromRootProps()}
-                style={{
-                  border: '2px dashed',
-                  borderColor: seepromFileHandle
-                    ? theme.palette.success.main
-                    : theme.palette.primary.main,
-                  borderRadius: '4px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <input {...getSeepromInputProps()} />
-                <Typography variant="body1" color="textSecondary" align="center">
-                  {seepromFileHandle
-                    ? `Selected SEEPROM: ${seepromFileHandle.name}`
-                    : 'Drag & drop SEEPROM File, or click to select'}
-                </Typography>
-              </div>
+              <DropzoneCard
+                title="SEEPROM File"
+                file={seepromFileHandle}
+                getRootProps={getSeepromRootProps}
+                getInputProps={getSeepromInputProps}
+              />
             </Grid>
           )}
 
