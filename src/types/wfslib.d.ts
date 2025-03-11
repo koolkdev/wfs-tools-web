@@ -21,7 +21,7 @@ declare module 'WfsLibModule' {
   }
 
   // File stream class
-  class FileStream {
+  export class FileStream {
     read(size: number, callback: (data: Uint8Array) => void): Promise<void>;
     seek(pos: number): Promise<number>;
     position(): Promise<number>;
@@ -72,15 +72,13 @@ declare module 'WfsLibModule' {
     get(index: number): string;
   }
 
-  export type WfsError = number;
-
   export interface WfsModuleType {
     WfsDevice: {
       Open(device: Device, key: Uint8Array): Promise<WfsDevice>;
     };
     WfsException: typeof WfsException;
-    File: typeof File;
-    Directory: typeof Directory;
+    File: typeof WfsFile;
+    Directory: typeof WfsDirectory;
     getMLCKeyFromOTP: (otpData: Uint8Array) => Uint8Array;
     getUSBKey: (otpData: Uint8Array, seepromData: Uint8Array) => Uint8Array;
     wfsErrorToString: (error: WfsError) => string;

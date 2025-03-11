@@ -1,20 +1,14 @@
-import { Device, WfsModuleType } from 'WfsLibModule';
+import { Device } from 'WfsLibModule';
 
-class JSFileDevice implements Device {
-  private fileHandle: FileSystemFileHandle;
-  private log2_sector_size: number;
-  private read_only: boolean;
-  private fileSize: number;
-  private sectors_count: number;
+export class JSFileDevice implements Device {
+  protected fileHandle: FileSystemFileHandle | File;
+  protected log2_sector_size: number;
+  protected read_only: boolean;
+  protected fileSize: number;
+  protected sectors_count: number;
 
-  /**
-   * Create a new JSFileDevice
-   * @param fileHandle - The file handle
-   * @param log2SectorSize - Log2 of the sector size (default: 9, which is 512 bytes)
-   * @param readOnly - Whether the device is read-only (default: true)
-   */
   constructor(
-    fileHandle: FileSystemFileHandle,
+    fileHandle: FileSystemFileHandle | File,
     log2SectorSize: number = 9,
     readOnly: boolean = true,
   ) {
@@ -31,10 +25,12 @@ class JSFileDevice implements Device {
   /**
    * Initialize the device - gets file size and calculates sector count
    */
-  async initialize(): Promise<boolean> {
+  protected async initialize(): Promise<boolean> {
     try {
-      // Get file size
-      const file = await this.fileHandle.getFile();
+      // Get file size - handle both FileSystemFileHandle and File
+      const file =
+        this.fileHandle instanceof File ? this.fileHandle : await this.fileHandle.getFile();
+
       this.fileSize = file.size;
 
       // Calculate sectors count
@@ -42,34 +38,29 @@ class JSFileDevice implements Device {
       this.sectors_count = Math.ceil(this.fileSize / sectorSize);
 
       console.log(
-        `JSFileDevice initialized - Size: ${this.fileSize}, Sectors: ${this.sectors_count}`,
+        `BaseFileDevice initialized - Size: ${this.fileSize}, Sectors: ${this.sectors_count}`,
       );
       return true;
     } catch (error) {
-      console.error('Error initializing JSFileDevice:', error);
+      console.error('Error initializing BaseFileDevice:', error);
       return false;
     }
   }
 
   /**
-   * Read sectors from the device
-   * @param data - The buffer to read into
-   * @param sectorAddress - The starting sector address
-   * @param sectorsCount - The number of sectors to read
+   * Common ReadSectors implementation
    */
   async ReadSectors(
     data: Uint8Array,
     sectorAddress: number,
     sectorsCount: number,
   ): Promise<boolean> {
-    const sectorSize = 1 << this.log2_sector_size;
-
     try {
-      // Get the file once for all reads
-      const file = await this.fileHandle.getFile();
+      const { offset, totalSize } = this.calculateSectorParameters(sectorAddress, sectorsCount);
 
-      const offset = sectorAddress * sectorSize;
-      const totalSize = sectorsCount * sectorSize;
+      // Get the file once for all reads
+      const file =
+        this.fileHandle instanceof File ? this.fileHandle : await this.fileHandle.getFile();
 
       if (offset + totalSize > this.fileSize) {
         throw new Error('Reading beyond device size');
@@ -92,12 +83,6 @@ class JSFileDevice implements Device {
     }
   }
 
-  /**
-   * Write sectors to the device
-   * @param data - The buffer to write from
-   * @param sectorAddress - The starting sector address
-   * @param sectorsCount - The number of sectors to write
-   */
   async WriteSectors(
     data: Uint8Array,
     sectorAddress: number,
@@ -107,11 +92,12 @@ class JSFileDevice implements Device {
       throw new Error('Device is read-only');
     }
 
-    const sectorSize = 1 << this.log2_sector_size;
+    if (!(this.fileHandle instanceof FileSystemFileHandle)) {
+      throw new Error('Write operations require a FileSystemFileHandle');
+    }
 
     try {
-      const offset = sectorAddress * sectorSize;
-      const totalSize = sectorsCount * sectorSize;
+      const { offset, totalSize } = this.calculateSectorParameters(sectorAddress, sectorsCount);
 
       if (offset + totalSize > this.fileSize) {
         throw new Error('Writing beyond device size');
@@ -178,6 +164,13 @@ class JSFileDevice implements Device {
   SetLog2SectorSize(log2SectorSize: number): void {
     this.log2_sector_size = log2SectorSize;
   }
-}
 
-export { JSFileDevice };
+  // Protected utility method for common sector calculations
+  protected calculateSectorParameters(sectorAddress: number, sectorsCount: number) {
+    const sectorSize = 1 << this.log2_sector_size;
+    const offset = sectorAddress * sectorSize;
+    const totalSize = sectorsCount * sectorSize;
+
+    return { offset, totalSize };
+  }
+}
