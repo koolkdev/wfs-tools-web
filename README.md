@@ -1,178 +1,135 @@
 # WFS Tools Web
 
-A modern web interface for exploring Wii U File System (WFS) images, built with TypeScript, WebAssembly, and CMake presets.
+A web-based application for browsing Wii U File System (WFS) images. Built with React, TypeScript, and WebAssembly (via Emscripten), it allows you to view and manage WFS images directly in your browser.
+
+**👉 [Try it live in your browser!](https://koolkdev.github.io/wfs-tools-web)**
 
 ![🤖 100% AI Magic ✨ | 🙋 0% Human Suffering 🎉](https://img.shields.io/badge/🤖_100%25_AI_Magic_✨-🙋_0%25_Human_Suffering_🎉-ff69b4.svg)
 
 ## Features
 
-- **Browser-Based WFS Explorer**: View and extract files directly in your web browser
-- **Streaming Processing**: Uses File System Access API for efficient handling of large WFS images
-- **Encryption Support**: Handles plain (unencrypted), MLC, and USB encrypted WFS images
-- **Directory Navigation**: Browse WFS directory structure with an intuitive file explorer interface
-- **File Extraction**: Extract individual files or entire directories to your local file system
-- **Content Viewer**: View file contents with hex and text viewing options
-- **WebAssembly Performance**: C++ core for maximum performance with TypeScript frontend
-- **Modern Web Stack**: Built with TypeScript, Webpack, and npm
-- **Dependency Management**: Uses Git submodules for wfslib, vcpkg, and Emscripten SDK
+- **Web-based WFS Browser**: Browse and extract files from WFS images directly in the browser.
+- **Efficient Streaming**: Uses the File System Access API for handling large images efficiently.
+- **Supports Encrypted Images**: Compatible with plain (unencrypted), MLC, and USB encrypted WFS images.
+- **Modern Web Stack**: Built using React, Vite, TypeScript, and WebAssembly.
+- **Performance-oriented**: Core logic in C++ compiled to WebAssembly.
+- **Dependency Management**: Includes `wfslib`, `vcpkg`, and `Emscripten` through Git submodules.
 
 ## Prerequisites
 
-- Node.js (v14+)
-- npm (v6+)
-- Emscripten SDK (recent version)
-- CMake (v3.23+)
-- Git (for submodule management)
+- Node.js (18.x+ recommended)
+- Git
 
-## Project Setup
+## Getting Started
 
-### Clone and Initialize Submodules
+### Clone the Repository
 
 ```bash
-# Clone the repository with submodules
-git clone --recurse-submodules https://github.com/yourusername/wfs-tools-web.git
-cd wfs-tools-web
+git clone --recurse-submodules https://github.com/yourusername/wfs-tools-web-react.git
+cd wfs-tools-web-react
 
-# If you've already cloned without submodules, initialize them with:
+# Or if you cloned without submodules:
 git submodule update --init --recursive
 ```
 
-### Install npm Dependencies
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-## Building
+## Building and Running
 
-### Simple All-in-One Build (Recommended)
+### Setup Emscripten
 
-Build everything with a single command:
-
-```bash
-# Release build (optimized for production)
-npm run build:all
-```
-
-That's it! This handles the Emscripten environment setup, WebAssembly compilation, and TypeScript frontend build.
-
-### Advanced Build Options
-
-If you need a debug build with source maps for development:
+Required only on the first run:
 
 ```bash
-npm run build:all:debug
-```
-
-For more granular control, you can run individual build steps:
-
-```bash
-# Initialize Emscripten (first time only)
 npm run setup:emscripten
-
-# Build only the WebAssembly module
-npm run build:wasm
-
-# Build only the TypeScript frontend
-npm run build
 ```
 
-### 5. Running the Application
+### Build WebAssembly Module
+
+Release build (optimized):
 
 ```bash
-npm start
+npm run build:wasm
 ```
 
-This will start a local HTTP server at http://localhost:9000 with the necessary headers for cross-origin isolation.
+For debug builds (with source maps):
 
-## Development
+```bash
+npm run build:wasm:debug
+```
 
-For development with hot-reloading:
+### Development Mode
+
+To start the development server with hot-reloading:
 
 ```bash
 npm run dev
 ```
 
-Note that any changes to C++ code will require rebuilding the WebAssembly module:
+_Note:_ If you modify the WebAssembly module (C++ code), rebuild it first:
 
 ```bash
 npm run build:wasm && npm run dev
 ```
 
+### Production Build
+
+To build the application for production deployment:
+
+```bash
+npm run build
+```
+
 ## Project Structure
 
 ```
-wfs-tools-web/
-├── submodules/           # Git submodules (wfslib, vcpkg, emsdk)
-├── cpp/                  # C++ source files and bindings
-├── src/                  # TypeScript source files
-├── wasm/                 # WebAssembly output directory
-├── custom-triplets/      # Custom vcpkg triplets
-├── CMakeLists.txt        # Main CMake configuration
-└── CMakePresets.json     # CMake presets configuration
+wfs-tools-web-react/
+├── src/                    # React/TypeScript application code
+├── submodules/
+│   ├── wfslib/             # WFS library
+│   ├── vcpkg/              # Dependency manager
+│   └── emsdk/              # Emscripten SDK
+├── public/                 # Static assets
+├── build/                  # Output directory
+├── CMakeLists.txt          # CMake configuration
+├── CMakePresets.json       # Build presets
+└── package.json
 ```
 
-## Using the Application
+## Usage
 
 ### Loading a WFS Image
 
-1. Select a WFS image file using the "Select WFS Image" button
-2. Choose the encryption type:
-   - **Plain**: No encryption (default)
-   - **MLC**: For MLC (internal storage) WFS images, requires an OTP file
-   - **USB**: For USB (external storage) WFS images, requires OTP and SEEPROM files
-3. If MLC or USB encryption is selected, provide the required key files
-4. Click "Load WFS Image" to process and open the image
+1. Click **"Select WFS Image"** to choose a file.
+2. Choose encryption type:
+   - **Plain (unencrypted)**
+   - **MLC (requires OTP file)**
+   - **USB (requires OTP and SEEPROM files)**
+3. Select required key files if applicable.
+4. Click **"Load WFS Image"**.
 
-### Browsing Files
+### Browsing
 
-- Navigate the directory structure in the left panel
-- Click on folders to navigate into them
-- Click on files to view their contents in the right panel
-- Use the parent directory link (..) to navigate up the directory structure
-
-### Viewing Files
-
-- Select a file to view its contents
-- Use the "Toggle Hex View" button to switch to hexadecimal view
-- Use the "Toggle Text View" button to switch to text view
+- Navigate directories and files using the interface.
+- Click directories to explore.
+- Click files to preview contents.
 
 ### Extracting Files
 
-1. Go to the "Extract" tab
-2. Select an output directory using the "Select Output Directory" button
-3. Configure extraction options:
-   - **Extract directories recursively**: Extract subdirectories and their contents
-   - **Preserve directory structure**: Maintain folder hierarchy in the output
-4. Use "Extract Current Directory" to extract the currently viewed directory
-5. Use "Extract Selected File" to extract only the currently selected file
-
-## CMake Presets
-
-This project uses CMake presets to simplify the build configuration:
-
-- **wasm-debug**: Debug build with optimization level O0 and source maps
-- **wasm-release**: Release build with optimization level O3
-
-## Security and Permissions
-
-This application uses the File System Access API which requires explicit user permission to access files. All file processing is done locally in your browser - no data is uploaded to any server.
+- Use the **"Extract"** option to save files to your computer.
+- Extraction supports recursive and structured output.
 
 ## Browser Compatibility
 
-The application requires a modern browser that supports:
+- Chrome (recommended)
+- Firefox
+- Edge
 
-- WebAssembly
-- File System Access API
-- Web Workers
-- SharedArrayBuffer with cross-origin isolation
-
-Recommended browsers:
-
-- Chrome 89+
-- Edge 89+
-- Opera 75+
-- Firefox 90+ (with some features enabled in about:config)
+_Note_: File System Access API is required; the application does not upload any files or data to a server.
 
 ## License
 

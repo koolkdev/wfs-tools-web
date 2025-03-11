@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150">
+  <!-- Background Rounded Rectangle -->
+  <rect x="5" y="5" width="290" height="140" rx="70" ry="70" fill="#009AC7" />
+  
+  <!-- Inner Rounded Rectangle -->
+  <rect x="15" y="15" width="270" height="120" rx="60" ry="60" fill="#FFFFFF" />
+  
+  <!-- Folder Icon Base (Bottom) -->
+  <path d="M45 50 L65 50 L80 35 L125 35 L140 50 L140 115 L45 115 Z" fill="#009AC7" />
+  
+  <!-- Folder Tab (Top) -->
+  <path d="M65 50 L80 35 L80 50 Z" fill="#0076A3" />
+  
+  <!-- File Document Icon -->
+  <rect x="85" y="60" width="40" height="45" fill="#FFFFFF" rx="3" ry="3" />
+  <rect x="90" y="68" width="30" height="5" fill="#009AC7" />
+  <rect x="90" y="80" width="30" height="5" fill="#009AC7" />
+  <rect x="90" y="92" width="22" height="5" fill="#009AC7" />
+  
+  <!-- WFS Text - Right Side -->
+  <text x="210" y="95" font-family="Arial, sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="#009AC7">WFS</text>
+</svg>

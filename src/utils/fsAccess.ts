@@ -37,14 +37,28 @@ export interface FilePickerOptions {
 }
 
 /**
- * Opens a file picker and saves data to the selected file.
- * This function can be called directly from ASYNCIFY-enabled C++ code.
+ * Check if the File System Access API is available
  */
-export async function mySaveFileWithPicker(
+export function isFileSystemAccessSupported(): boolean {
+  return 'showOpenFilePicker' in window;
+}
+
+/**
+ * Opens a file picker and saves data to the selected file.
+ */
+export async function saveFileWithPicker(
   data: ArrayBuffer,
   suggestedName: string,
 ): Promise<SaveResponse> {
   try {
+    // Check if File System Access API is available
+    if (!isFileSystemAccessSupported()) {
+      return {
+        success: false,
+        error: 'File System Access API is not supported in this browser.',
+      };
+    }
+
     // Show the save file picker
     const fileHandle = await window.showSaveFilePicker({
       suggestedName,
@@ -76,66 +90,15 @@ export async function mySaveFileWithPicker(
 
 /**
  * Returns an array of file handles from the file picker.
- * This function can be called directly from ASYNCIFY-enabled C++ code.
  */
-export async function myShowOpenFilePicker(
-  options: FilePickerOptions = {},
-): Promise<PickerResponse> {
+export async function showOpenFilePicker(options: FilePickerOptions = {}): Promise<PickerResponse> {
   try {
-    // If File System Access API is not available, fall back to input element
-    if (!window.showOpenFilePicker) {
-      return new Promise<PickerResponse>((resolve, reject) => {
-        const input = document.createElement('input');
-        input.type = 'file';
-
-        if (options.multiple) {
-          input.multiple = true;
-        }
-
-        // Set accept attribute if types are specified
-        if (options.types && options.types.length > 0) {
-          const accept = options.types
-            .flatMap(type => (type.accept ? Object.values(type.accept) : []))
-            .flat()
-            .join(',');
-
-          if (accept) {
-            input.accept = accept;
-          }
-        }
-
-        input.addEventListener('change', () => {
-          if (input.files && input.files.length > 0) {
-            // Create handles from files
-            const handles = Array.from(input.files).map(file => {
-              // Create a mock file handle that matches FileSystemFileHandle interface
-              return {
-                getFile: async () => file,
-                kind: 'file' as const,
-                name: file.name,
-                // Add missing required methods
-                createWritable: async () => {
-                  throw new Error('createWritable not supported in fallback mode');
-                },
-                isSameEntry: async () => {
-                  throw new Error('isSameEntry not supported in fallback mode');
-                },
-              } satisfies FileSystemFileHandle;
-            });
-
-            resolve({ success: true, handles });
-          } else {
-            reject({ success: false, error: 'No file selected' });
-          }
-        });
-
-        input.addEventListener('cancel', () => {
-          reject({ success: false, error: 'File selection cancelled' });
-        });
-
-        // Trigger the file input
-        input.click();
-      });
+    // Check if File System Access API is available
+    if (!isFileSystemAccessSupported()) {
+      return {
+        success: false,
+        error: 'File System Access API is not supported in this browser.',
+      };
     }
 
     // Use native File System Access API
@@ -154,10 +117,17 @@ export async function myShowOpenFilePicker(
 
 /**
  * Returns a directory handle from the directory picker.
- * This function can be called directly from ASYNCIFY-enabled C++ code.
  */
-export async function myShowDirectoryPicker(): Promise<DirectoryPickerResponse> {
+export async function showDirectoryPicker(): Promise<DirectoryPickerResponse> {
   try {
+    // Check if File System Access API is available
+    if (!isFileSystemAccessSupported()) {
+      return {
+        success: false,
+        error: 'File System Access API is not supported in this browser.',
+      };
+    }
+
     const dirHandle = await window.showDirectoryPicker();
     return { success: true, dirHandle };
   } catch (error) {

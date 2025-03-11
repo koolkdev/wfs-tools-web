@@ -32,7 +32,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     list(APPEND EMSCRIPTEN_BASE_FLAGS
         -s ASSERTIONS=2
         -s STACK_OVERFLOW_CHECK=2
-        -s DEMANGLE_SUPPORT=1
     )
 endif()
 
@@ -69,12 +68,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Install the built files to the wasm directory
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/wasm
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/src/assets/wasm
 )
 
 # Copy wasm and source map files to the wasm directory
 install(FILES 
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/wfslib_web.wasm
     $<$<BOOL:${EMSCRIPTEN_GENERATE_SOURCE_MAP}>:$<TARGET_FILE_DIR:${PROJECT_NAME}>/wfslib_web.wasm.map>
-    DESTINATION ${CMAKE_SOURCE_DIR}/wasm
+    DESTINATION ${CMAKE_SOURCE_DIR}/src/assets/wasm
 )
