@@ -89,16 +89,19 @@ const LoadWfsImagePage = () => {
   const wfsDropzone = useDropzone({
     onDrop: handleDrop(setWfsFile),
     accept: { 'application/octet-stream': ['.wfs', '.img', '.bin'] },
+    multiple: false,
   });
 
   const otpDropzone = useDropzone({
     onDrop: handleDrop(setOtpFile),
     accept: { 'application/octet-stream': ['.bin'] },
+    multiple: false,
   });
 
   const seepromDropzone = useDropzone({
     onDrop: handleDrop(setSeepromFile),
     accept: { 'application/octet-stream': ['.bin'] },
+    multiple: false,
   });
 
   const isLoadEnabled = () => {
@@ -112,13 +115,15 @@ const LoadWfsImagePage = () => {
   };
 
   const handleLoadImage = async () => {
+    if (!wfsFile) return;
     setLoading(true);
     setError(null);
     try {
-      await createDevice(wfsFile!, encryptionType, otpFile || undefined, seepromFile || undefined);
+      await createDevice(wfsFile, encryptionType, otpFile || undefined, seepromFile || undefined);
       navigate('/browse/');
-    } catch (e) {
-      setError((e as Error).message || 'An error occurred during loading.');
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
+      setError(errorMsg);
     }
     setLoading(false);
   };
