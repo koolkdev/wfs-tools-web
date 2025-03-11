@@ -3,6 +3,8 @@ import { AppBar, Toolbar, Typography, Container, Box, IconButton } from '@mui/ma
 import { Brightness4 as DarkModeIcon, Brightness7 as LightModeIcon } from '@mui/icons-material';
 import { Outlet } from 'react-router-dom';
 import { useTheme } from '../../theme/ThemeContext';
+import wfsLogoLight from '../../assets/wfs-logo-light.svg'; // Light theme logo
+import wfsLogoDark from '../../assets/wfs-logo-dark.svg'; // Dark theme logo
 
 const AppLayout: React.FC = () => {
   const { themeMode, toggleTheme } = useTheme();
@@ -11,6 +13,12 @@ const AppLayout: React.FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', minWidth: '100vw' }}>
       <AppBar position="static">
         <Toolbar>
+          <Box
+            component="img"
+            src={themeMode === 'dark' ? wfsLogoDark : wfsLogoLight}
+            alt="WFS Tools Logo"
+            sx={{ height: 48, width: 96, mr: 2 }}
+          />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             WFS Tools
           </Typography>

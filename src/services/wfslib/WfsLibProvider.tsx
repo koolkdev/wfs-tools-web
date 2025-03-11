@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
-import WfsLibModule from '../../../public/wasm/wfslib_web.js';
+import React, { createContext, useState, useContext, useEffect, useMemo, useRef } from 'react';
+import WfsLibModule from '../../assets/wasm/wfslib_web.js';
 import type { WfsModuleType, WfsDevice, Device } from 'WfsLibModule';
 import { JSFileDevice } from './jsFileDevice.js';
 import { WfsAsyncQueue } from './wfsAsyncQueue.js';
@@ -9,8 +9,6 @@ interface WfsLibContextType {
   loading: boolean;
   device: WfsDevice | null;
   asyncQueue: WfsAsyncQueue;
-  jsDevice: Device | null;
-  setDevice: (device: WfsDevice | null) => void;
   createDevice: (
     file: File,
     encryptionType: 'plain' | 'mlc' | 'usb',
@@ -24,8 +22,6 @@ const WfsLibContext = createContext<WfsLibContextType>({
   loading: true,
   device: null,
   asyncQueue: new WfsAsyncQueue(), // Provide a default instance
-  jsDevice: null,
-  setDevice: () => {},
   createDevice: async () => {
     throw new Error('WfsLib not initialized');
   },
@@ -35,7 +31,7 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [module, setModule] = useState<WfsModuleType | null>(null);
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState<WfsDevice | null>(null);
-  const [jsDevice, setJsDevice] = useState<Device | null>(null);
+  const jsDevice = useRef<Device | null>(null);
 
   // Create a single async queue instance for this provider
   const asyncQueue = useMemo(() => new WfsAsyncQueue(), []);
@@ -57,10 +53,8 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     return asyncQueue.execute(async () => {
-      // Create JS file device
-      const jsDevice = module.Device.implement(new JSFileDevice(file, 9, true));
-      // Need to keep ref
-      setJsDevice(jsDevice);
+      // Create JS file device, and keep a ref
+      jsDevice.current = module.Device.implement(new JSFileDevice(file, 9, true));
 
       let key: Uint8Array | undefined;
 
@@ -78,7 +72,7 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       // Open WFS device
-      const wfsDevice = await module.WfsDevice.Open(jsDevice, key || new Uint8Array());
+      const wfsDevice = await module.WfsDevice.Open(jsDevice.current, key || new Uint8Array());
 
       // Set the device in context
       setDevice(wfsDevice);
@@ -94,7 +88,6 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       device,
       asyncQueue,
       jsDevice,
-      setDevice,
       createDevice,
     }),
     [module, loading, device, asyncQueue, jsDevice],

@@ -5,7 +5,7 @@ import { CircularProgress, Box } from '@mui/material';
 import { useWfsLib } from '../../services/wfslib/WfsLibProvider';
 
 const EnsureWfsDeviceRoute: React.FC = () => {
-  const { device, loading, module } = useWfsLib();
+  const { device, loading } = useWfsLib();
 
   // If still loading module, show loading
   if (loading) {

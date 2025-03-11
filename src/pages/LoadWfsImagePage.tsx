@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 const LoadWfsImagePage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { createDevice, loading: moduleLoading, asyncQueue } = useWfsLib();
+  const { createDevice, loading: moduleLoading } = useWfsLib();
 
   const [encryptionType, setEncryptionType] = useState<'plain' | 'mlc' | 'usb'>('plain');
   const [wfsFileHandle, setWfsFileHandle] = useState<File | null>(null);

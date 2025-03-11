@@ -68,12 +68,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Install the built files to the wasm directory
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/public/wasm
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/src/assets/wasm
 )
 
 # Copy wasm and source map files to the wasm directory
 install(FILES 
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/wfslib_web.wasm
     $<$<BOOL:${EMSCRIPTEN_GENERATE_SOURCE_MAP}>:$<TARGET_FILE_DIR:${PROJECT_NAME}>/wfslib_web.wasm.map>
-    DESTINATION ${CMAKE_SOURCE_DIR}/public/wasm
+    DESTINATION ${CMAKE_SOURCE_DIR}/src/assets/wasm
 )

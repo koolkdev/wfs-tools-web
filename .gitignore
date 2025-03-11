@@ -25,6 +25,6 @@ dist-ssr
 *.sw?
 
 # Ignore the built wasm files
-public/wasm/wfslib_web.js
-public/wasm/wfslib_web.wasm
-public/wasm/wfslib_web.wasm.map
+src/assets/wasm/wfslib_web.js
+src/assets/wasm/wfslib_web.wasm
+src/assets/wasm/wfslib_web.wasm.map
