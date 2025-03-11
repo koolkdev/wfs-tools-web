@@ -4,242 +4,214 @@ import {
   Button,
   Container,
   Grid,
-  Paper,
   Typography,
   Alert,
   Snackbar,
-  ButtonGroup,
-  useTheme,
+  ToggleButtonGroup,
+  ToggleButton,
   CircularProgress,
+  Card,
+  CardActionArea,
+  CardContent,
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 import { useDropzone } from 'react-dropzone';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
 import { useNavigate } from 'react-router-dom';
+const FileUploadCard = ({
+  title,
+  file,
+  getRootProps,
+  getInputProps,
+}: {
+  title: string;
+  file: File | null;
+  getRootProps: any;
+  getInputProps: any;
+}) => {
+  return (
+    <Card
+      variant="outlined"
+      sx={{
+        borderStyle: 'dashed',
+        borderColor: file ? 'success.main' : 'primary.main', // Green when file is set
+        backgroundColor: 'background.paper', // Light green when set
+        transition: 'background-color 0.3s ease, border-color 0.3s ease',
+      }}
+    >
+      <CardActionArea {...getRootProps()} sx={{ p: 2 }}>
+        <CardContent sx={{ textAlign: 'center', py: 4 }}>
+          <input {...getInputProps()} />
 
-const LoadWfsImagePage: React.FC = () => {
-  const theme = useTheme();
+          {/* Show different icon based on file state */}
+          {file ? (
+            <CheckCircleIcon fontSize="large" color="success" />
+          ) : (
+            <CloudUploadIcon fontSize="large" color="primary" />
+          )}
+
+          <Typography
+            variant="subtitle1"
+            sx={{
+              mt: 2,
+              fontWeight: file ? 'bold' : 'normal',
+              color: file ? 'success.dark' : 'text.primary',
+            }}
+          >
+            {file ? `✔ ${file.name}` : title}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
+
+const LoadWfsImagePage = () => {
   const navigate = useNavigate();
   const { createDevice, loading: moduleLoading } = useWfsLib();
 
   const [encryptionType, setEncryptionType] = useState<'plain' | 'mlc' | 'usb'>('plain');
-  const [wfsFileHandle, setWfsFileHandle] = useState<File | null>(null);
-  const [otpFileHandle, setOtpFileHandle] = useState<File | null>(null);
-  const [seepromFileHandle, setSeepromFileHandle] = useState<File | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [wfsFile, setWfsFile] = useState<File | null>(null);
+  const [otpFile, setOtpFile] = useState<File | null>(null);
+  const [seepromFile, setSeepromFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const onDropWfsFile = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) setWfsFileHandle(acceptedFiles[0]);
-  }, []);
+  const handleDrop = useCallback(
+    (setter: React.Dispatch<React.SetStateAction<File | null>>) => (files: File[]) => {
+      setter(files[0] || null);
+    },
+    [],
+  );
 
-  const onDropOtpFile = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) setOtpFileHandle(acceptedFiles[0]);
-  }, []);
-
-  const onDropSeepromFile = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) setSeepromFileHandle(acceptedFiles[0]);
-  }, []);
-
-  const { getRootProps: getWfsRootProps, getInputProps: getWfsInputProps } = useDropzone({
-    onDrop: onDropWfsFile,
+  const wfsDropzone = useDropzone({
+    onDrop: handleDrop(setWfsFile),
     accept: { 'application/octet-stream': ['.wfs', '.img', '.bin'] },
     multiple: false,
   });
 
-  const { getRootProps: getOtpRootProps, getInputProps: getOtpInputProps } = useDropzone({
-    onDrop: onDropOtpFile,
+  const otpDropzone = useDropzone({
+    onDrop: handleDrop(setOtpFile),
     accept: { 'application/octet-stream': ['.bin'] },
     multiple: false,
   });
 
-  const { getRootProps: getSeepromRootProps, getInputProps: getSeepromInputProps } = useDropzone({
-    onDrop: onDropSeepromFile,
+  const seepromDropzone = useDropzone({
+    onDrop: handleDrop(setSeepromFile),
     accept: { 'application/octet-stream': ['.bin'] },
     multiple: false,
   });
 
-  const isLoadButtonEnabled = () => {
-    if (moduleLoading || isLoading) return false;
-    switch (encryptionType) {
-      case 'plain':
-        return !!wfsFileHandle;
-      case 'mlc':
-        return !!wfsFileHandle && !!otpFileHandle;
-      case 'usb':
-        return !!wfsFileHandle && !!otpFileHandle && !!seepromFileHandle;
-    }
+  const isLoadEnabled = () => {
+    if (moduleLoading || loading) return false;
+    return (
+      wfsFile &&
+      (encryptionType === 'plain' ||
+        (encryptionType === 'mlc' && otpFile) ||
+        (encryptionType === 'usb' && otpFile && seepromFile))
+    );
   };
 
   const handleLoadImage = async () => {
-    if (!wfsFileHandle) return;
-
-    setIsLoading(true);
-    setErrorMessage(null);
-
+    if (!wfsFile) return;
+    setLoading(true);
+    setError(null);
     try {
-      await createDevice(
-        wfsFileHandle,
-        encryptionType,
-        otpFileHandle || undefined,
-        seepromFileHandle || undefined,
-      );
+      await createDevice(wfsFile, encryptionType, otpFile || undefined, seepromFile || undefined);
       navigate('/browse/');
     } catch (error) {
-      const errorMsg =
-        error instanceof Error
-          ? error.message
-          : 'An unknown error occurred while loading the WFS image';
-      setErrorMessage(errorMsg);
+      const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
+      setError(errorMsg);
     }
-
-    setIsLoading(false);
+    setLoading(false);
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Load WFS Image
-        </Typography>
+    <Container maxWidth="sm" sx={{ py: 5 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        sx={{
+          color: 'primary.main',
+          fontWeight: 'bold',
+          letterSpacing: 1,
+          textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+          mb: 3,
+        }}
+      >
+        Load WFS Image
+      </Typography>
 
-        {/* Encryption Type Selection */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-          <ButtonGroup
-            variant="outlined"
-            aria-label="encryption type selection"
-            color="primary"
-            fullWidth
-          >
-            <Button
-              onClick={() => setEncryptionType('plain')}
-              variant={encryptionType === 'plain' ? 'contained' : 'outlined'}
-            >
-              Plain
-            </Button>
-            <Button
-              onClick={() => setEncryptionType('mlc')}
-              variant={encryptionType === 'mlc' ? 'contained' : 'outlined'}
-            >
-              MLC
-            </Button>
-            <Button
-              onClick={() => setEncryptionType('usb')}
-              variant={encryptionType === 'usb' ? 'contained' : 'outlined'}
-            >
-              USB
-            </Button>
-          </ButtonGroup>
-        </Box>
+      <ToggleButtonGroup
+        color="primary"
+        fullWidth
+        value={encryptionType}
+        exclusive
+        onChange={(_e, val) => val && setEncryptionType(val)}
+        sx={{ mb: 3 }}
+      >
+        <ToggleButton value="plain">Plain</ToggleButton>
+        <ToggleButton value="mlc">MLC</ToggleButton>
+        <ToggleButton value="usb">USB</ToggleButton>
+      </ToggleButtonGroup>
 
-        <Grid container spacing={2}>
-          {/* WFS Image Dropzone */}
-          <Grid item xs={12}>
-            <div
-              {...getWfsRootProps()}
-              style={{
-                border: '2px dashed',
-                borderColor: wfsFileHandle
-                  ? theme.palette.success.main
-                  : theme.palette.primary.main,
-                borderRadius: '4px',
-                padding: '20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <input {...getWfsInputProps()} />
-              <Typography variant="body1" color="textSecondary" align="center">
-                {wfsFileHandle
-                  ? `Selected: ${wfsFileHandle.name}`
-                  : 'Drag & drop WFS Image, or click to select'}
-              </Typography>
-            </div>
-          </Grid>
-
-          {/* Conditional Key File Inputs */}
-          {(encryptionType === 'mlc' || encryptionType === 'usb') && (
-            <Grid item xs={encryptionType === 'usb' ? 6 : 12}>
-              <div
-                {...getOtpRootProps()}
-                style={{
-                  border: '2px dashed',
-                  borderColor: otpFileHandle
-                    ? theme.palette.success.main
-                    : theme.palette.primary.main,
-                  borderRadius: '4px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <input {...getOtpInputProps()} />
-                <Typography variant="body1" color="textSecondary" align="center">
-                  {otpFileHandle
-                    ? `Selected OTP: ${otpFileHandle.name}`
-                    : 'Drag & drop OTP File, or click to select'}
-                </Typography>
-              </div>
-            </Grid>
-          )}
-
-          {encryptionType === 'usb' && (
-            <Grid item xs={6}>
-              <div
-                {...getSeepromRootProps()}
-                style={{
-                  border: '2px dashed',
-                  borderColor: seepromFileHandle
-                    ? theme.palette.success.main
-                    : theme.palette.primary.main,
-                  borderRadius: '4px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <input {...getSeepromInputProps()} />
-                <Typography variant="body1" color="textSecondary" align="center">
-                  {seepromFileHandle
-                    ? `Selected SEEPROM: ${seepromFileHandle.name}`
-                    : 'Drag & drop SEEPROM File, or click to select'}
-                </Typography>
-              </div>
-            </Grid>
-          )}
-
-          {/* Load Button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!isLoadButtonEnabled()}
-              fullWidth
-              onClick={handleLoadImage}
-              startIcon={isLoading ? <CircularProgress size={20} /> : null}
-            >
-              {isLoading ? 'Loading...' : 'Load WFS Image'}
-            </Button>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <FileUploadCard
+            title="Select WFS Image"
+            file={wfsFile}
+            getRootProps={wfsDropzone.getRootProps}
+            getInputProps={wfsDropzone.getInputProps}
+          />
         </Grid>
 
-        {/* Information Alert */}
-        <Box mt={2}>
-          <Alert severity="info">
-            Select your WFS image file and provide additional key files based on the encryption
-            type.
-          </Alert>
-        </Box>
-      </Paper>
+        {(encryptionType === 'mlc' || encryptionType === 'usb') && (
+          <Grid item xs={encryptionType === 'usb' ? 6 : 12}>
+            <FileUploadCard
+              title="Select OTP File"
+              file={otpFile}
+              getRootProps={otpDropzone.getRootProps}
+              getInputProps={otpDropzone.getInputProps}
+            />
+          </Grid>
+        )}
 
-      {/* Error Snackbar */}
-      <Snackbar
-        open={!!errorMessage}
-        autoHideDuration={6000}
-        onClose={() => setErrorMessage(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setErrorMessage(null)} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+        {encryptionType === 'usb' && (
+          <Grid item xs={6}>
+            <FileUploadCard
+              title="Select SEEPROM File"
+              file={seepromFile}
+              getRootProps={seepromDropzone.getRootProps}
+              getInputProps={seepromDropzone.getInputProps}
+            />
+          </Grid>
+        )}
+
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
+            disabled={!isLoadEnabled()}
+            onClick={handleLoadImage}
+            startIcon={loading && <CircularProgress size={20} color="inherit" />}
+          >
+            {loading ? 'Loading...' : 'Load Image'}
+          </Button>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mt: 3 }}>
+        <Alert severity="info">Provide additional key files based on your encryption type.</Alert>
+      </Box>
+
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
         </Alert>
       </Snackbar>
     </Container>
