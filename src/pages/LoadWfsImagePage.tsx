@@ -13,7 +13,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Paper,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -119,7 +118,7 @@ const LoadWfsImagePage = () => {
       await createDevice(wfsFile!, encryptionType, otpFile || undefined, seepromFile || undefined);
       navigate('/browse/');
     } catch (e) {
-      setError(e.message || 'An error occurred during loading.');
+      setError((e as Error).message || 'An error occurred during loading.');
     }
     setLoading(false);
   };
@@ -146,7 +145,7 @@ const LoadWfsImagePage = () => {
         fullWidth
         value={encryptionType}
         exclusive
-        onChange={(e, val) => val && setEncryptionType(val)}
+        onChange={(_e, val) => val && setEncryptionType(val)}
         sx={{ mb: 3 }}
       >
         <ToggleButton value="plain">Plain</ToggleButton>
