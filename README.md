@@ -2,6 +2,8 @@
 
 A web-based application for browsing Wii U File System (WFS) images. Built with React, TypeScript, and WebAssembly (via Emscripten), it allows you to view and manage WFS images directly in your browser.
 
+**👉 [Try it live in your browser!](https://koolkdev.github.io/wfs-tools-web)**
+
 ![🤖 100% AI Magic ✨ | 🙋 0% Human Suffering 🎉](https://img.shields.io/badge/🤖_100%25_AI_Magic_✨-🙋_0%25_Human_Suffering_🎉-ff69b4.svg)
 
 ## Features
