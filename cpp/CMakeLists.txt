@@ -24,6 +24,7 @@ set(EMSCRIPTEN_BASE_FLAGS
     -sFILESYSTEM=0
     -sENVIRONMENT='web'
     -sASYNCIFY=1
+    -sASSERTIONS=1
     --bind
 )
 
