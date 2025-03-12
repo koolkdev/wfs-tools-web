@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect, useMemo, useRef } from 'react';
-import WfsLibModule from '../../assets/wasm/wfslib_web.js';
 import type { WfsModuleType, WfsDevice, Device } from 'WfsLibModule';
 import { JSFileDevice } from './jsFileDevice.js';
 import { WfsAsyncQueue } from './wfsAsyncQueue.js';
@@ -37,7 +36,11 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const asyncQueue = useMemo(() => new WfsAsyncQueue(), []);
 
   useEffect(() => {
-    WfsLibModule()
+    const loadModule = async () => {
+      const WfsLibModule = (await import('../../assets/wasm/wfslib_web.js')).default;
+      return await WfsLibModule();
+    };
+    loadModule()
       .then(setModule)
       .finally(() => setLoading(false));
   }, []);
