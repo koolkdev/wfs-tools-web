@@ -1,36 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <!-- 3D Cube -->
   <g transform="translate(100, 90)">
-    <!-- Front face -->
+    <!-- Cube Faces -->
     <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#0072CE" stroke="#FFFFFF" stroke-width="3"/>
-    <!-- Right face -->
     <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#00A3E0" stroke="#FFFFFF" stroke-width="3"/>
-    <!-- Left face -->
     <path d="M-60,-20 L0,20 L0,80 L-60,40 Z" fill="#005EB8" stroke="#FFFFFF" stroke-width="3"/>
     
-    <!-- File icons on faces -->
-    <!-- Front face icon (document) --><path d="M -30.00,-20.00 L -10.00,-33.33 L 10.00,-33.33 L 30.00,-20.00 L 0.00,-0.00 Z" fill="#FFFFFF"/>
-<line x1="-15.00" y1="-16.67" x2="5.00" y2="-30.00" stroke="#0072CE" stroke-width="2"/>
-<line x1="-5.00" y1="-10.00" x2="15.00" y2="-23.33" stroke="#0072CE" stroke-width="2"/>
-
+    <!-- Front Face Icon (Document) -->
+    <path d="M-30,-20 L-10,-33.33 L10,-33.33 L30,-20 L0,0 Z" fill="#FFFFFF"/>
+    <line x1="-15" y1="-16.67" x2="5" y2="-30" stroke="#0072CE" stroke-width="2"/>
+    <line x1="-5" y1="-10" x2="15" y2="-23.33" stroke="#0072CE" stroke-width="2"/>
     
-    <!-- Right face icon (folder) --><path d="M 15.00,25.00 L 37.50,10.00 L 45.00,11.00 L 45.00,35.00 L 15.00,55.00 Z" fill="#FFFFFF"/>
-<!-- Folder "tabs" -->
-<path d="M 18.00,35.00 L 42.00,19.00 L 42.00,25.00 L 18.00,41.00 Z" fill="#00A3E0"/>
-<path d="M 18.00,43.40 L 42.00,27.40 L 42.00,33.40 L 18.00,49.40 Z" fill="#00A3E0"/>
-
+    <!-- Right Face Icon (Folder) -->
+    <path d="M15,25 L37.5,10 L45,11 L45,35 L15,55 Z" fill="#FFFFFF"/>
+    <!-- Folder Tabs -->
+    <path d="M18,35 L42,19 L42,25 L18,41 Z" fill="#00A3E0"/>
+    <path d="M18,43.4 L42,27.4 L42,33.4 L18,49.4 Z" fill="#00A3E0"/>
     
-    <!-- Left face icon (image) -->
-<!-- Image background rectangle -->
-<!-- Image background rectangle -->
-<path d="M -45.00,5.00 L -15.00,25.00 L -15.00,55.00 L -45.00,35.00 Z" fill="#FFFFFF"/>
-<path d="M -45.00,27.50 L -15.00,47.50 L -22.50,35.00 L -30.00,37.50 L -37.50,25.00 Z" fill="#005EB8"/>
-<!-- Image circle (approximated as polygon) -->
-<path d="M -25.50,28.50 L -25.84,29.99 L -26.82,30.80 L -28.28,30.81 L -30.00,30.00 
-         L -31.72,28.51 L -33.18,26.56 L -34.16,24.45 L -34.50,22.50 L -34.16,21.01 
-         L -33.18,20.20 L -31.72,20.19 L -30.00,21.00 L -28.28,22.49 L -26.82,24.44 
-         L -25.84,26.55 Z" fill="#005EB8"/>
-
+    <!-- Left Face Icon (Image) -->
+    <path d="M-45,5 L-15,25 L-15,55 L-45,35 Z" fill="#FFFFFF"/>
+    <path d="M-45,27.5 L-15,47.5 L-22.5,35 L-30,37.5 L-37.5,25 Z" fill="#005EB8"/>
+    <!-- Image Circle (Approximated as Polygon) -->
+    <path d="M-25.5,28.5 L-25.84,29.99 L-26.82,30.8 L-28.28,30.81 L-30,30 
+             L-31.72,28.51 L-33.18,26.56 L-34.16,24.45 L-34.5,22.5 L-34.16,21.01 
+             L-33.18,20.2 L-31.72,20.19 L-30,21 L-28.28,22.49 L-26.82,24.44 
+             L-25.84,26.55 Z" fill="#005EB8"/>
   </g>
-
 </svg>
