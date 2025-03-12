@@ -17,11 +17,40 @@ const AppLayout: React.FC = () => {
             component="img"
             src={themeMode === 'dark' ? wfsLogoDark : wfsLogoLight}
             alt="WFS Tools Logo"
-            sx={{ height: 48, width: 96, mr: 2 }}
+            sx={{ height: 48, width: 48, mr: 0 }}
           />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            WFS Tools
+          {/* Stylized text in React */}
+          <Typography
+            variant="h6"
+            sx={{
+              userSelect: 'none',
+              outline: 'none',
+              fontWeight: 'bold',
+              background:
+                themeMode === 'dark'
+                  ? 'linear-gradient(90deg, #3A86FF 0%, #4EA8DE 100%)'
+                  : 'linear-gradient(90deg,rgb(171, 205, 225) 0%,rgb(158, 195, 255) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mr: 1,
+            }}
+          >
+            WFS
           </Typography>
+
+          <Typography
+            variant="h6"
+            sx={{
+              userSelect: 'none',
+              outline: 'none',
+              fontWeight: 'normal',
+              color: themeMode === 'dark' ? '#4EA8DE' : 'rgb(212, 226, 235)',
+              flexGrow: 1,
+            }}
+          >
+            Explorer
+          </Typography>
+
           <IconButton color="inherit" onClick={toggleTheme}>
             {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>

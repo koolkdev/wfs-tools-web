@@ -1,22 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150">
-  <!-- Background Rounded Rectangle -->
-  <rect x="5" y="5" width="290" height="140" rx="70" ry="70" fill="#009AC7" />
-  
-  <!-- Inner Rounded Rectangle -->
-  <rect x="15" y="15" width="270" height="120" rx="60" ry="60" fill="#FFFFFF" />
-  
-  <!-- Folder Icon Base (Bottom) -->
-  <path d="M45 50 L65 50 L80 35 L125 35 L140 50 L140 115 L45 115 Z" fill="#009AC7" />
-  
-  <!-- Folder Tab (Top) -->
-  <path d="M65 50 L80 35 L80 50 Z" fill="#0076A3" />
-  
-  <!-- File Document Icon -->
-  <rect x="85" y="60" width="40" height="45" fill="#FFFFFF" rx="3" ry="3" />
-  <rect x="90" y="68" width="30" height="5" fill="#009AC7" />
-  <rect x="90" y="80" width="30" height="5" fill="#009AC7" />
-  <rect x="90" y="92" width="22" height="5" fill="#009AC7" />
-  
-  <!-- WFS Text - Right Side -->
-  <text x="210" y="95" font-family="Arial, sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="#009AC7">WFS</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- 3D Cube -->
+  <g transform="translate(100, 90)">
+    <!-- Front face -->
+    <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#0072CE" stroke="#FFFFFF" stroke-width="3"/>
+    <!-- Right face -->
+    <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#00A3E0" stroke="#FFFFFF" stroke-width="3"/>
+    <!-- Left face -->
+    <path d="M-60,-20 L0,20 L0,80 L-60,40 Z" fill="#005EB8" stroke="#FFFFFF" stroke-width="3"/>
+    
+    <!-- File icons on faces -->
+    <!-- Front face icon (document) --><path d="M -30.00,-20.00 L -10.00,-33.33 L 10.00,-33.33 L 30.00,-20.00 L 0.00,-0.00 Z" fill="#FFFFFF"/>
+<line x1="-15.00" y1="-16.67" x2="5.00" y2="-30.00" stroke="#0072CE" stroke-width="2"/>
+<line x1="-5.00" y1="-10.00" x2="15.00" y2="-23.33" stroke="#0072CE" stroke-width="2"/>
+
+    
+    <!-- Right face icon (folder) --><path d="M 15.00,25.00 L 37.50,10.00 L 45.00,11.00 L 45.00,35.00 L 15.00,55.00 Z" fill="#FFFFFF"/>
+<!-- Folder "tabs" -->
+<path d="M 18.00,35.00 L 42.00,19.00 L 42.00,25.00 L 18.00,41.00 Z" fill="#00A3E0"/>
+<path d="M 18.00,43.40 L 42.00,27.40 L 42.00,33.40 L 18.00,49.40 Z" fill="#00A3E0"/>
+
+    
+    <!-- Left face icon (image) -->
+<!-- Image background rectangle -->
+<!-- Image background rectangle -->
+<path d="M -45.00,5.00 L -15.00,25.00 L -15.00,55.00 L -45.00,35.00 Z" fill="#FFFFFF"/>
+<path d="M -45.00,27.50 L -15.00,47.50 L -22.50,35.00 L -30.00,37.50 L -37.50,25.00 Z" fill="#005EB8"/>
+<!-- Image circle (approximated as polygon) -->
+<path d="M -25.50,28.50 L -25.84,29.99 L -26.82,30.80 L -28.28,30.81 L -30.00,30.00 
+         L -31.72,28.51 L -33.18,26.56 L -34.16,24.45 L -34.50,22.50 L -34.16,21.01 
+         L -33.18,20.20 L -31.72,20.19 L -30.00,21.00 L -28.28,22.49 L -26.82,24.44 
+         L -25.84,26.55 Z" fill="#005EB8"/>
+
+  </g>
+
 </svg>

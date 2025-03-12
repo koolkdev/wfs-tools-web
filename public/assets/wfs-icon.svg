@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <circle cx="16" cy="16" r="16" fill="#0072CE" opacity="0.3"/>
+  
+  <!-- 3D Cube - Simplified for Favicon -->
+  <g transform="translate(16, 14) scale(0.16)">
+    <!-- Cube Faces -->
+    <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#0072CE" stroke="#FFFFFF" stroke-width="3"/>
+    <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#00A3E0" stroke="#FFFFFF" stroke-width="3"/>
+    <path d="M-60,-20 L0,20 L0,80 L-60,40 Z" fill="#005EB8" stroke="#FFFFFF" stroke-width="3"/>
+    
+    <!-- Simplified Icons -->
+    <path d="M-30,-20 L-10,-33.33 L10,-33.33 L30,-20 L0,0 Z" fill='rgb(185, 220, 255)'/>
+    <path d="M15,25 L37.5,10 L45,11 L45,35 L15,55 Z" fill='rgb(185, 220, 255)'/>
+    <path d="M-45,5 L-15,25 L-15,55 L-45,35 Z" fill='rgb(185, 220, 255)'/>
+  </g>
+</svg>
