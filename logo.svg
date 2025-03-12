@@ -1,6 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <!-- 3D Cube -->
-  <g transform="translate(100, 90)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120">
+  <!-- Background (very light) -->
+  <rect width="500" height="120" rx="20" fill="#0072CE" opacity="0.05"/>
+  
+  <!-- Definitions for gradients -->
+  <defs>
+    <linearGradient id="wfsGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#005EB8" />
+      <stop offset="100%" stop-color="#0072CE" />
+    </linearGradient>
+    
+    <linearGradient id="explorerGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0072CE" />
+      <stop offset="100%" stop-color="#00A3E0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 3D Cube - Smaller Scale -->
+  <g transform="translate(90, 60) scale(0.6)">
     <!-- Cube Faces -->
     <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#0072CE" stroke="#FFFFFF" stroke-width="3"/>
     <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#00A3E0" stroke="#FFFFFF" stroke-width="3"/>
@@ -25,5 +41,14 @@
              L-31.72,28.51 L-33.18,26.56 L-34.16,24.45 L-34.5,22.5 L-34.16,21.01 
              L-33.18,20.2 L-31.72,20.19 L-30,21 L-28.28,22.49 L-26.82,24.44 
              L-25.84,26.55 Z" fill="#005EB8"/>
+  </g>
+  
+  <!-- Text "WFS Explorer" with gradients -->
+  <g transform="translate(150, 70)">
+    <!-- WFS - Main Title -->
+    <text x="0" y="10" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="url(#wfsGradientH)">WFS</text>
+    
+    <!-- Explorer - Subtitle -->
+    <text x="120" y="10" font-family="Arial, sans-serif" font-size="50" font-weight="normal" fill="url(#explorerGradientH)">Explorer</text>
   </g>
 </svg>
