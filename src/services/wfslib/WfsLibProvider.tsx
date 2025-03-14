@@ -1,11 +1,11 @@
-import React, { createContext, useState, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, useState, useContext, useMemo, useRef, use } from 'react';
 import type { WfsModuleType, WfsDevice, Device } from 'WfsLibModule';
 import { JSFileDevice } from './jsFileDevice.js';
 import { WfsAsyncQueue } from './wfsAsyncQueue.js';
+import { wfsLibPromise } from './wfsLibLoader';
 
 interface WfsLibContextType {
-  module: WfsModuleType | null;
-  loading: boolean;
+  module: WfsModuleType;
   device: WfsDevice | null;
   asyncQueue: WfsAsyncQueue;
   createDevice: (
@@ -16,34 +16,18 @@ interface WfsLibContextType {
   ) => Promise<WfsDevice>;
 }
 
-const WfsLibContext = createContext<WfsLibContextType>({
-  module: null,
-  loading: true,
-  device: null,
-  asyncQueue: new WfsAsyncQueue(), // Provide a default instance
-  createDevice: async () => {
-    throw new Error('WfsLib not initialized');
-  },
-});
+// Create a default context that will be properly initialized when the provider is used
+const WfsLibContext = createContext<WfsLibContextType | null>(null);
 
 export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [module, setModule] = useState<WfsModuleType | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Load the module with the use hook - this will trigger Suspense if not ready
+  const module = use(wfsLibPromise);
+
   const [device, setDevice] = useState<WfsDevice | null>(null);
   const jsDevice = useRef<Device | null>(null);
 
   // Create a single async queue instance for this provider
   const asyncQueue = useMemo(() => new WfsAsyncQueue(), []);
-
-  useEffect(() => {
-    const loadModule = async () => {
-      const WfsLibModule = (await import('../../assets/wasm/wfslib_web.js')).default;
-      return await WfsLibModule();
-    };
-    loadModule()
-      .then(setModule)
-      .finally(() => setLoading(false));
-  }, []);
 
   const createDevice = async (
     file: File,
@@ -51,10 +35,6 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     otpFile?: File,
     seepromFile?: File,
   ): Promise<WfsDevice> => {
-    if (!module) {
-      throw new Error('WfsLib module not loaded');
-    }
-
     return asyncQueue.execute(async () => {
       // Create JS file device, and keep a ref
       jsDevice.current = module.Device.implement(new JSFileDevice(file, 9, true));
@@ -87,16 +67,20 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const contextValue = useMemo(
     () => ({
       module,
-      loading,
       device,
       asyncQueue,
-      jsDevice,
       createDevice,
     }),
-    [module, loading, device, asyncQueue, jsDevice],
+    [module, device],
   );
 
   return <WfsLibContext.Provider value={contextValue}>{children}</WfsLibContext.Provider>;
 };
 
-export const useWfsLib = () => useContext(WfsLibContext);
+export const useWfsLib = () => {
+  const context = useContext(WfsLibContext);
+  if (!context) {
+    throw new Error('useWfsLib must be used within a WfsLibProvider');
+  }
+  return context;
+};

@@ -6,9 +6,9 @@ import AppLayout from '../components/layout/AppLayout';
 import EnsureWfsDeviceRoute from '../components/layout/EnsureWfsDeviceRoute';
 
 // Pages
-import LoadWfsImagePage from '../pages/LoadWfsImagePage';
-import DirectoryBrowserPage from '../pages/DirectoryBrowserPage';
-import NotFoundPage from '../pages/NotFoundPage';
+const LoadWfsImagePage = React.lazy(() => import('../pages/LoadWfsImagePage'));
+const DirectoryBrowserPage = React.lazy(() => import('../pages/DirectoryBrowserPage'));
+const NotFoundPage = React.lazy(() => import('../pages/NotFoundPage'));
 //import HomePage from '../pages/HomePage';
 
 const AppRouter: React.FC = () => {
