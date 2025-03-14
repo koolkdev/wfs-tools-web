@@ -1,16 +1,22 @@
+import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './theme/ThemeContext';
 import { WfsLibProvider } from './services/wfslib/WfsLibProvider';
-import { WfsLibInitializer } from './components/common/WfsLibInitializer';
+import { LoadingScreen } from './components/common/LoadingScreen';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
-import AppRouter from './router/AppRouter';
+const AppRouter = lazy(() => import('./router/AppRouter'));
+
 function App() {
   return (
-    <WfsLibProvider>
-      <ThemeProvider>
-        <WfsLibInitializer />
-        <AppRouter />
-      </ThemeProvider>
-    </WfsLibProvider>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <WfsLibProvider>
+            <AppRouter />
+          </WfsLibProvider>
+        </Suspense>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 # WFS Tools Web
 
-![Logo](https://raw.githubusercontent.com/koolkdev/wfs-tools-web/main/logo.svg)
+![Logo](https://raw.githubusercontent.com/koolkdev/wfs-tools-web/main/src/assets/logo.svg)
 
 A web-based application for browsing Wii U File System (WFS) images. Built with React, TypeScript, and WebAssembly (via Emscripten), it allows you to view and manage WFS images directly in your browser.
 

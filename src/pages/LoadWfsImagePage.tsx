@@ -76,7 +76,7 @@ const FileUploadCard = ({
 
 const LoadWfsImagePage = () => {
   const navigate = useNavigate();
-  const { createDevice, loading: moduleLoading } = useWfsLib();
+  const { createDevice } = useWfsLib();
 
   const [encryptionType, setEncryptionType] = useState<'plain' | 'mlc' | 'usb'>('plain');
   const [wfsFile, setWfsFile] = useState<File | null>(null);
@@ -111,7 +111,7 @@ const LoadWfsImagePage = () => {
   });
 
   const isLoadEnabled = () => {
-    if (moduleLoading || loading) return false;
+    if (loading) return false;
     return (
       wfsFile &&
       (encryptionType === 'plain' ||
