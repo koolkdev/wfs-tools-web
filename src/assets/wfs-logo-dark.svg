@@ -1,22 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150">
-  <!-- Background Rounded Rectangle -->
-  <rect x="5" y="5" width="290" height="140" rx="70" ry="70" fill="#00B4E6" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- 3D Cube -->
+  <g transform="translate(100, 90)">
+    <!-- Cube Faces -->
+    <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#0091EA" stroke="#333333" stroke-width="3"/>
+    <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#29B6F6" stroke="#333333" stroke-width="3"/>
+    <path d="M-60,-20 L0,20 L0,80 L-60,40 Z" fill="#0277BD" stroke="#333333" stroke-width="3"/>
+    
+    <!-- Front Face Icon (Document) -->
+    <path d="M-30,-20 L-10,-33.33 L10,-33.33 L30,-20 L0,0 Z" fill="#333333"/>
+    <line x1="-15" y1="-16.67" x2="5" y2="-30" stroke="#0091EA" stroke-width="2"/>
+    <line x1="-5" y1="-10" x2="15" y2="-23.33" stroke="#0091EA" stroke-width="2"/>
+    
+    <!-- Right Face Icon (Folder) -->
+    <path d="M15,25 L37.5,10 L45,11 L45,35 L15,55 Z" fill="#333333"/>
+    <!-- Folder Tabs -->
+    <path d="M18,35 L42,19 L42,25 L18,41 Z" fill="#29B6F6"/>
+    <path d="M18,43.4 L42,27.4 L42,33.4 L18,49.4 Z" fill="#29B6F6"/>
+    
+    <!-- Left Face Icon (Image) -->
+    <path d="M-45,5 L-15,25 L-15,55 L-45,35 Z" fill="#333333"/>
+    <path d="M-45,27.5 L-15,47.5 L-22.5,35 L-30,37.5 L-37.5,25 Z" fill="#0277BD"/>
+    <!-- Image Circle (Approximated as Polygon) -->
+    <path d="M-25.5,28.5 L-25.84,29.99 L-26.82,30.8 L-28.28,30.81 L-30,30 
+             L-31.72,28.51 L-33.18,26.56 L-34.16,24.45 L-34.5,22.5 L-34.16,21.01 
+             L-33.18,20.2 L-31.72,20.19 L-30,21 L-28.28,22.49 L-26.82,24.44 
+             L-25.84,26.55 Z" fill="#0277BD"/>
+  </g>
   
-  <!-- Inner Rounded Rectangle -->
-  <rect x="15" y="15" width="270" height="120" rx="60" ry="60" fill="#2D2D2D" />
-  
-  <!-- Folder Icon Base (Bottom) -->
-  <path d="M45 50 L65 50 L80 35 L125 35 L140 50 L140 115 L45 115 Z" fill="#00B4E6" />
-  
-  <!-- Folder Tab (Top) -->
-  <path d="M65 50 L80 35 L80 50 Z" fill="#0090C7" />
-  
-  <!-- File Document Icon -->
-  <rect x="85" y="60" width="40" height="45" fill="#2D2D2D" rx="3" ry="3" />
-  <rect x="90" y="68" width="30" height="5" fill="#00B4E6" />
-  <rect x="90" y="80" width="30" height="5" fill="#00B4E6" />
-  <rect x="90" y="92" width="22" height="5" fill="#00B4E6" />
-  
-  <!-- WFS Text - Right Side -->
-  <text x="210" y="95" font-family="Arial, sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="#00B4E6">WFS</text>
+  <!-- Subtle Glowing Effect -->
+  <g transform="translate(100, 100)" opacity="0.15">
+    <path d="M-60,-20 L0,-60 L60,-20 L0,20 Z" fill="#29B6F6" filter="blur(5px)"/>
+    <path d="M60,-20 L0,20 L0,80 L60,40 Z" fill="#29B6F6" filter="blur(5px)"/>
+    <path d="M-60,-20 L0,20 L0,80 L-60,40 Z" fill="#29B6F6" filter="blur(5px)"/>
+  </g>
 </svg>

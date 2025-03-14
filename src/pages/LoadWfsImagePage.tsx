@@ -14,7 +14,9 @@ import {
   CardActionArea,
   CardContent,
 } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import VpnKey from '@mui/icons-material/VpnKey';
+
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { useDropzone } from 'react-dropzone';
@@ -23,11 +25,13 @@ import { useNavigate } from 'react-router-dom';
 const FileUploadCard = ({
   title,
   file,
+  isKey,
   getRootProps,
   getInputProps,
 }: {
   title: string;
   file: File | null;
+  isKey: boolean;
   getRootProps: any;
   getInputProps: any;
 }) => {
@@ -48,8 +52,10 @@ const FileUploadCard = ({
           {/* Show different icon based on file state */}
           {file ? (
             <CheckCircleIcon fontSize="large" color="success" />
+          ) : isKey ? (
+            <VpnKey fontSize="large" color="primary" />
           ) : (
-            <CloudUploadIcon fontSize="large" color="primary" />
+            <InsertDriveFile fontSize="large" color="primary" />
           )}
 
           <Typography
@@ -142,7 +148,7 @@ const LoadWfsImagePage = () => {
           mb: 3,
         }}
       >
-        Load WFS Image
+        Welcome!
       </Typography>
 
       <ToggleButtonGroup
@@ -163,6 +169,7 @@ const LoadWfsImagePage = () => {
           <FileUploadCard
             title="Select WFS Image"
             file={wfsFile}
+            isKey={false}
             getRootProps={wfsDropzone.getRootProps}
             getInputProps={wfsDropzone.getInputProps}
           />
@@ -173,6 +180,7 @@ const LoadWfsImagePage = () => {
             <FileUploadCard
               title="Select OTP File"
               file={otpFile}
+              isKey={true}
               getRootProps={otpDropzone.getRootProps}
               getInputProps={otpDropzone.getInputProps}
             />
@@ -184,6 +192,7 @@ const LoadWfsImagePage = () => {
             <FileUploadCard
               title="Select SEEPROM File"
               file={seepromFile}
+              isKey={true}
               getRootProps={seepromDropzone.getRootProps}
               getInputProps={seepromDropzone.getInputProps}
             />
@@ -206,7 +215,9 @@ const LoadWfsImagePage = () => {
       </Grid>
 
       <Box sx={{ mt: 3 }}>
-        <Alert severity="info">Provide additional key files based on your encryption type.</Alert>
+        <Alert severity="info">
+          All files are processed locally in your browser - no data is uploaded to any server.{' '}
+        </Alert>
       </Box>
 
       <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
