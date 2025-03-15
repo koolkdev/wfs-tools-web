@@ -11,6 +11,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Paper,
 } from '@mui/material';
 import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
 import VpnKey from '@mui/icons-material/VpnKey';
@@ -139,85 +140,103 @@ const LoadWfsImagePage = () => {
 
   return (
     <Container maxWidth="sm" sx={{ py: 5 }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
+      <Paper
         sx={{
-          color: 'primary.main',
-          fontWeight: 'bold',
-          letterSpacing: 1,
-          textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-          mb: 3,
+          p: 3,
+          borderRadius: 3,
+          boxShadow: 3,
+          backgroundColor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
-        Welcome!
-      </Typography>
+        <Typography
+          variant="h4"
+          gutterBottom
+          align="center"
+          sx={{
+            color: 'primary.main',
+            fontWeight: 'bold',
+            letterSpacing: 1,
+            textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+            mb: 2,
+          }}
+        >
+          Welcome!
+        </Typography>
+        <Typography
+          variant="body1"
+          align="center"
+          sx={{ mb: 3, color: 'text.secondary', fontSize: '0.9rem' }}
+        >
+          Please select your device type and add the required files below.
+        </Typography>
 
-      <DeviceSelection
-        selectedValue={deviceType}
-        onChange={value => setDeviceType(value as 'plain' | 'mlc' | 'usb')}
-      />
+        <DeviceSelection
+          selectedValue={deviceType}
+          onChange={value => setDeviceType(value as 'plain' | 'mlc' | 'usb')}
+        />
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <FileUploadCard
-            title="Select WFS Image"
-            file={wfsFile}
-            isKey={false}
-            getRootProps={wfsDropzone.getRootProps}
-            getInputProps={wfsDropzone.getInputProps}
-          />
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FileUploadCard
+              title="Select WFS Image"
+              file={wfsFile}
+              isKey={false}
+              getRootProps={wfsDropzone.getRootProps}
+              getInputProps={wfsDropzone.getInputProps}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <FileUploadCard
+              title="Select OTP File"
+              file={otpFile}
+              isKey={true}
+              disabled={deviceType === 'plain'}
+              getRootProps={otpDropzone.getRootProps}
+              getInputProps={otpDropzone.getInputProps}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <FileUploadCard
+              title="Select SEEPROM File"
+              file={seepromFile}
+              isKey={true}
+              disabled={deviceType !== 'usb'}
+              getRootProps={seepromDropzone.getRootProps}
+              getInputProps={seepromDropzone.getInputProps}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              fullWidth
+              disabled={!isLoadEnabled()}
+              onClick={handleLoadImage}
+              startIcon={loading && <CircularProgress size={20} color="inherit" />}
+            >
+              {loading ? 'Loading...' : 'Load Image'}
+            </Button>
+          </Grid>
         </Grid>
 
-        <Grid item xs={6}>
-          <FileUploadCard
-            title="Select OTP File"
-            file={otpFile}
-            isKey={true}
-            disabled={deviceType === 'plain'}
-            getRootProps={otpDropzone.getRootProps}
-            getInputProps={otpDropzone.getInputProps}
-          />
-        </Grid>
+        <Box sx={{ mt: 3 }}>
+          <Alert severity="info">
+            All files are processed locally in your browser - no data is uploaded to any server.{' '}
+          </Alert>
+        </Box>
 
-        <Grid item xs={6}>
-          <FileUploadCard
-            title="Select SEEPROM File"
-            file={seepromFile}
-            isKey={true}
-            disabled={deviceType !== 'usb'}
-            getRootProps={seepromDropzone.getRootProps}
-            getInputProps={seepromDropzone.getInputProps}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            fullWidth
-            disabled={!isLoadEnabled()}
-            onClick={handleLoadImage}
-            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-          >
-            {loading ? 'Loading...' : 'Load Image'}
-          </Button>
-        </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 3 }}>
-        <Alert severity="info">
-          All files are processed locally in your browser - no data is uploaded to any server.{' '}
-        </Alert>
-      </Box>
-
-      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
-        <Alert severity="error" onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      </Snackbar>
+        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        </Snackbar>
+      </Paper>
     </Container>
   );
 };
