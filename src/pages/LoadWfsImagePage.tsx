@@ -70,7 +70,7 @@ const FileUploadCard = ({
               color: disabled ? 'text.disabled' : file ? 'success.dark' : 'text.primary',
             }}
           >
-            {file ? `✔ ${file.name}` : title}
+            {file ? file.name : title}
           </Typography>
         </CardContent>
       </CardActionArea>

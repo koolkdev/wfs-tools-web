@@ -1,4 +1,9 @@
 declare module 'WfsLibModule' {
+  export class Vector<T> {
+    size(): number;
+    get(index: number): T;
+  }
+
   export enum WfsError {
     EntryNotFound,
     NotDirectory,
@@ -14,36 +19,63 @@ declare module 'WfsLibModule' {
     NoSpace,
   }
 
+  export enum EntryType {
+    file,
+    directory,
+    link,
+  }
+
   export class WfsException {
     constructor(error: WfsError);
     what(): string;
     error(): WfsError;
   }
 
+  // Base Entry class
+  export class Entry {
+    name(): string;
+    type(): EntryType;
+    owner(): number;
+    group(): number;
+    mode(): number;
+    creationTime(): number;
+    modificationTime(): number;
+  }
+
   // File stream class
   export class FileStream {
-    read(size: number, callback: (data: Uint8Array) => void): Promise<void>;
-    seek(pos: number): Promise<number>;
-    position(): Promise<number>;
-    eof(): Promise<boolean>;
-    delete(): void;
+    read(size: number, callback: (data: Uint8Array) => void): void;
+    seek(pos: number): void;
+    position(): number;
+    eof(): boolean;
   }
 
-  export class WfsFile {
-    getSize(): Promise<number>;
-    getSizeOnDisk(): Promise<number>;
-    getStream(): Promise<FileStream>;
+  // File class
+  export class File extends Entry {
+    size(): number;
+    sizeOnDisk(): number;
+    isEncrypted(): boolean;
+    stream(): FileStream;
   }
 
-  export class WfsDirectory {
-    getSize(): Promise<number>;
-    listEntries(): Promise<VectorString>;
-    hasEntry(name: string): Promise<boolean>;
-    getFile(name: string): Promise<WfsFile>;
-    getDirectory(name: string): Promise<WfsDirectory>;
-    getEntryDetails(): Promise<
-      Record<string, { type: 'file' | 'directory' | 'link'; size?: number }>
-    >;
+  // Link class
+  export class Link extends Entry {
+    // Inherits base Entry methods
+  }
+
+  // QuotaArea class
+  export class QuotaArea {
+    blockSize(): number;
+    blocksCount(): number;
+    freeBlocksCount(): number;
+  }
+
+  // Directory class
+  export class Directory extends Entry {
+    getEntries(): Promise<Vector<Entry>>;
+    getEntry(name: string): Promise<Entry>;
+    isQuota(): boolean;
+    quota(): QuotaArea;
   }
 
   export interface Device {
@@ -57,19 +89,13 @@ declare module 'WfsLibModule' {
   }
 
   export class WfsDevice {
-    // Static Open method
+    // Static methods
     static Open(device: Device, key: Uint8Array): Promise<WfsDevice>;
-    getRootDirectory(): Promise<WfsDirectory>;
-    getDirectory(path: string): Promise<WfsDirectory>;
-    getFile(path: string): Promise<WfsFile>;
-    hasEntry(path: string): Promise<boolean>;
-    getEntryType(path: string): Promise<string>;
-    flush(): Promise<void>;
-  }
 
-  export class VectorString {
-    size(): number;
-    get(index: number): string;
+    // Instance methods
+    getRootDirectory(): Promise<Directory>;
+    getEntry(path: string): Promise<Entry>;
+    flush(): void;
   }
 
   export interface WfsModuleType {
@@ -77,14 +103,20 @@ declare module 'WfsLibModule' {
       Open(device: Device, key: Uint8Array): Promise<WfsDevice>;
     };
     WfsException: typeof WfsException;
-    File: typeof WfsFile;
-    Directory: typeof WfsDirectory;
-    getMLCKeyFromOTP: (otpData: Uint8Array) => Uint8Array;
-    getUSBKey: (otpData: Uint8Array, seepromData: Uint8Array) => Uint8Array;
+    Entry: typeof Entry;
+    File: typeof File;
+    Directory: typeof Directory;
+    Link: typeof Link;
+    QuotaArea: typeof QuotaArea;
+    EntryType: typeof EntryType;
+    getMLCKeyFromOTP: (otpData: Uint8Array) => Vector<number>;
+    getUSBKey: (otpData: Uint8Array, seepromData: Uint8Array) => Vector<number>;
     wfsErrorToString: (error: WfsError) => string;
     Device: {
       implement(device: Device): Device;
     };
+    VectorEntry: typeof Vector<Entry>;
+    VectorByte: typeof Vector<number>;
   }
 
   export default function (): Promise<WfsModuleType>;

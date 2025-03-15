@@ -45,13 +45,21 @@ export const WfsLibProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (encryptionType === 'mlc') {
         if (!otpFile) throw new Error('OTP file required for MLC encryption');
         const otpData = new Uint8Array(await otpFile.arrayBuffer());
-        key = module.getMLCKeyFromOTP(otpData);
+        const keyVector = module.getMLCKeyFromOTP(otpData);
+        key = new Uint8Array(keyVector.size());
+        for (let i = 0; i < keyVector.size(); i++) {
+          key[i] = keyVector.get(i);
+        }
       } else if (encryptionType === 'usb') {
         if (!otpFile || !seepromFile)
           throw new Error('OTP and SEEPROM files required for USB encryption');
         const otpData = new Uint8Array(await otpFile.arrayBuffer());
         const seepromData = new Uint8Array(await seepromFile.arrayBuffer());
-        key = module.getUSBKey(otpData, seepromData);
+        const keyVector = module.getUSBKey(otpData, seepromData);
+        key = new Uint8Array(keyVector.size());
+        for (let i = 0; i < keyVector.size(); i++) {
+          key[i] = keyVector.get(i);
+        }
       }
 
       // Open WFS device
