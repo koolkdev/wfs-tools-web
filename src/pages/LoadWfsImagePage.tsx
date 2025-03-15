@@ -7,8 +7,6 @@ import {
   Typography,
   Alert,
   Snackbar,
-  ToggleButtonGroup,
-  ToggleButton,
   CircularProgress,
   Card,
   CardActionArea,
@@ -18,6 +16,8 @@ import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
 import VpnKey from '@mui/icons-material/VpnKey';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+import DeviceSelection, { DeviceType } from '../components/common/DeviceSelection';
 
 import { useDropzone } from 'react-dropzone';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
@@ -78,7 +78,7 @@ const LoadWfsImagePage = () => {
   const navigate = useNavigate();
   const { createDevice } = useWfsLib();
 
-  const [encryptionType, setEncryptionType] = useState<'plain' | 'mlc' | 'usb'>('plain');
+  const [deviceType, setDeviceType] = useState<DeviceType>('mlc');
   const [wfsFile, setWfsFile] = useState<File | null>(null);
   const [otpFile, setOtpFile] = useState<File | null>(null);
   const [seepromFile, setSeepromFile] = useState<File | null>(null);
@@ -114,9 +114,9 @@ const LoadWfsImagePage = () => {
     if (loading) return false;
     return (
       wfsFile &&
-      (encryptionType === 'plain' ||
-        (encryptionType === 'mlc' && otpFile) ||
-        (encryptionType === 'usb' && otpFile && seepromFile))
+      (deviceType === 'plain' ||
+        (deviceType === 'mlc' && otpFile) ||
+        (deviceType === 'usb' && otpFile && seepromFile))
     );
   };
 
@@ -125,7 +125,7 @@ const LoadWfsImagePage = () => {
     setLoading(true);
     setError(null);
     try {
-      await createDevice(wfsFile, encryptionType, otpFile || undefined, seepromFile || undefined);
+      await createDevice(wfsFile, deviceType, otpFile || undefined, seepromFile || undefined);
       navigate('/browse/');
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
@@ -151,18 +151,10 @@ const LoadWfsImagePage = () => {
         Welcome!
       </Typography>
 
-      <ToggleButtonGroup
-        color="primary"
-        fullWidth
-        value={encryptionType}
-        exclusive
-        onChange={(_e, val) => val && setEncryptionType(val)}
-        sx={{ mb: 3 }}
-      >
-        <ToggleButton value="plain">Plain</ToggleButton>
-        <ToggleButton value="mlc">MLC</ToggleButton>
-        <ToggleButton value="usb">USB</ToggleButton>
-      </ToggleButtonGroup>
+      <DeviceSelection
+        selectedValue={deviceType}
+        onChange={value => setDeviceType(value as 'plain' | 'mlc' | 'usb')}
+      />
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
@@ -175,8 +167,8 @@ const LoadWfsImagePage = () => {
           />
         </Grid>
 
-        {(encryptionType === 'mlc' || encryptionType === 'usb') && (
-          <Grid item xs={encryptionType === 'usb' ? 6 : 12}>
+        {(deviceType === 'mlc' || deviceType === 'usb') && (
+          <Grid item xs={deviceType === 'usb' ? 6 : 12}>
             <FileUploadCard
               title="Select OTP File"
               file={otpFile}
@@ -187,7 +179,7 @@ const LoadWfsImagePage = () => {
           </Grid>
         )}
 
-        {encryptionType === 'usb' && (
+        {deviceType === 'usb' && (
           <Grid item xs={6}>
             <FileUploadCard
               title="Select SEEPROM File"
