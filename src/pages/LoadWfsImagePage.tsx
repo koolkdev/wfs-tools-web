@@ -7,17 +7,18 @@ import {
   Typography,
   Alert,
   Snackbar,
-  ToggleButtonGroup,
-  ToggleButton,
   CircularProgress,
   Card,
   CardActionArea,
   CardContent,
+  Paper,
 } from '@mui/material';
 import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
 import VpnKey from '@mui/icons-material/VpnKey';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+import DeviceSelection, { DeviceType } from '../components/common/DeviceSelection';
 
 import { useDropzone } from 'react-dropzone';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
@@ -28,42 +29,45 @@ const FileUploadCard = ({
   isKey,
   getRootProps,
   getInputProps,
+  disabled,
 }: {
   title: string;
   file: File | null;
   isKey: boolean;
   getRootProps: any;
   getInputProps: any;
+  disabled?: boolean;
 }) => {
   return (
     <Card
       variant="outlined"
       sx={{
         borderStyle: 'dashed',
-        borderColor: file ? 'success.main' : 'primary.main', // Green when file is set
+        borderColor: disabled ? 'divider' : file ? 'success.main' : 'primary.main', // Green when file is set
         backgroundColor: 'background.paper', // Light green when set
         transition: 'background-color 0.3s ease, border-color 0.3s ease',
+        opacity: disabled ? 0.5 : 1,
       }}
     >
-      <CardActionArea {...getRootProps()} sx={{ p: 2 }}>
+      <CardActionArea {...getRootProps()} sx={{ p: 2 }} disabled={disabled}>
         <CardContent sx={{ textAlign: 'center', py: 4 }}>
           <input {...getInputProps()} />
 
           {/* Show different icon based on file state */}
           {file ? (
-            <CheckCircleIcon fontSize="large" color="success" />
+            <CheckCircleIcon fontSize="large" color={disabled ? 'disabled' : 'success'} />
           ) : isKey ? (
-            <VpnKey fontSize="large" color="primary" />
+            <VpnKey fontSize="large" color={disabled ? 'disabled' : 'primary'} />
           ) : (
-            <InsertDriveFile fontSize="large" color="primary" />
+            <InsertDriveFile fontSize="large" color={disabled ? 'disabled' : 'primary'} />
           )}
 
           <Typography
             variant="subtitle1"
             sx={{
               mt: 2,
-              fontWeight: file ? 'bold' : 'normal',
-              color: file ? 'success.dark' : 'text.primary',
+              fontWeight: disabled ? 'normal' : file ? 'bold' : 'normal',
+              color: disabled ? 'text.disabled' : file ? 'success.dark' : 'text.primary',
             }}
           >
             {file ? `✔ ${file.name}` : title}
@@ -78,7 +82,7 @@ const LoadWfsImagePage = () => {
   const navigate = useNavigate();
   const { createDevice } = useWfsLib();
 
-  const [encryptionType, setEncryptionType] = useState<'plain' | 'mlc' | 'usb'>('plain');
+  const [deviceType, setDeviceType] = useState<DeviceType>('mlc');
   const [wfsFile, setWfsFile] = useState<File | null>(null);
   const [otpFile, setOtpFile] = useState<File | null>(null);
   const [seepromFile, setSeepromFile] = useState<File | null>(null);
@@ -114,9 +118,9 @@ const LoadWfsImagePage = () => {
     if (loading) return false;
     return (
       wfsFile &&
-      (encryptionType === 'plain' ||
-        (encryptionType === 'mlc' && otpFile) ||
-        (encryptionType === 'usb' && otpFile && seepromFile))
+      (deviceType === 'plain' ||
+        (deviceType === 'mlc' && otpFile) ||
+        (deviceType === 'usb' && otpFile && seepromFile))
     );
   };
 
@@ -125,7 +129,7 @@ const LoadWfsImagePage = () => {
     setLoading(true);
     setError(null);
     try {
-      await createDevice(wfsFile, encryptionType, otpFile || undefined, seepromFile || undefined);
+      await createDevice(wfsFile, deviceType, otpFile || undefined, seepromFile || undefined);
       navigate('/browse/');
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
@@ -136,95 +140,103 @@ const LoadWfsImagePage = () => {
 
   return (
     <Container maxWidth="sm" sx={{ py: 5 }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
+      <Paper
         sx={{
-          color: 'primary.main',
-          fontWeight: 'bold',
-          letterSpacing: 1,
-          textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-          mb: 3,
+          p: 3,
+          borderRadius: 3,
+          boxShadow: 3,
+          backgroundColor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
-        Welcome!
-      </Typography>
+        <Typography
+          variant="h4"
+          gutterBottom
+          align="center"
+          sx={{
+            color: 'primary.main',
+            fontWeight: 'bold',
+            letterSpacing: 1,
+            textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+            mb: 2,
+          }}
+        >
+          Welcome!
+        </Typography>
+        <Typography
+          variant="body1"
+          align="center"
+          sx={{ mb: 3, color: 'text.secondary', fontSize: '0.9rem' }}
+        >
+          Please select your device type and add the required files below.
+        </Typography>
 
-      <ToggleButtonGroup
-        color="primary"
-        fullWidth
-        value={encryptionType}
-        exclusive
-        onChange={(_e, val) => val && setEncryptionType(val)}
-        sx={{ mb: 3 }}
-      >
-        <ToggleButton value="plain">Plain</ToggleButton>
-        <ToggleButton value="mlc">MLC</ToggleButton>
-        <ToggleButton value="usb">USB</ToggleButton>
-      </ToggleButtonGroup>
+        <DeviceSelection
+          selectedValue={deviceType}
+          onChange={value => setDeviceType(value as 'plain' | 'mlc' | 'usb')}
+        />
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <FileUploadCard
-            title="Select WFS Image"
-            file={wfsFile}
-            isKey={false}
-            getRootProps={wfsDropzone.getRootProps}
-            getInputProps={wfsDropzone.getInputProps}
-          />
-        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FileUploadCard
+              title="Select WFS Image"
+              file={wfsFile}
+              isKey={false}
+              getRootProps={wfsDropzone.getRootProps}
+              getInputProps={wfsDropzone.getInputProps}
+            />
+          </Grid>
 
-        {(encryptionType === 'mlc' || encryptionType === 'usb') && (
-          <Grid item xs={encryptionType === 'usb' ? 6 : 12}>
+          <Grid item xs={6}>
             <FileUploadCard
               title="Select OTP File"
               file={otpFile}
               isKey={true}
+              disabled={deviceType === 'plain'}
               getRootProps={otpDropzone.getRootProps}
               getInputProps={otpDropzone.getInputProps}
             />
           </Grid>
-        )}
 
-        {encryptionType === 'usb' && (
           <Grid item xs={6}>
             <FileUploadCard
               title="Select SEEPROM File"
               file={seepromFile}
               isKey={true}
+              disabled={deviceType !== 'usb'}
               getRootProps={seepromDropzone.getRootProps}
               getInputProps={seepromDropzone.getInputProps}
             />
           </Grid>
-        )}
 
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            fullWidth
-            disabled={!isLoadEnabled()}
-            onClick={handleLoadImage}
-            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-          >
-            {loading ? 'Loading...' : 'Load Image'}
-          </Button>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              fullWidth
+              disabled={!isLoadEnabled()}
+              onClick={handleLoadImage}
+              startIcon={loading && <CircularProgress size={20} color="inherit" />}
+            >
+              {loading ? 'Loading...' : 'Load Image'}
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
 
-      <Box sx={{ mt: 3 }}>
-        <Alert severity="info">
-          All files are processed locally in your browser - no data is uploaded to any server.{' '}
-        </Alert>
-      </Box>
+        <Box sx={{ mt: 3 }}>
+          <Alert severity="info">
+            All files are processed locally in your browser - no data is uploaded to any server.{' '}
+          </Alert>
+        </Box>
 
-      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
-        <Alert severity="error" onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      </Snackbar>
+        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        </Snackbar>
+      </Paper>
     </Container>
   );
 };
