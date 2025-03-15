@@ -28,42 +28,45 @@ const FileUploadCard = ({
   isKey,
   getRootProps,
   getInputProps,
+  disabled,
 }: {
   title: string;
   file: File | null;
   isKey: boolean;
   getRootProps: any;
   getInputProps: any;
+  disabled?: boolean;
 }) => {
   return (
     <Card
       variant="outlined"
       sx={{
         borderStyle: 'dashed',
-        borderColor: file ? 'success.main' : 'primary.main', // Green when file is set
+        borderColor: disabled ? 'divider' : file ? 'success.main' : 'primary.main', // Green when file is set
         backgroundColor: 'background.paper', // Light green when set
         transition: 'background-color 0.3s ease, border-color 0.3s ease',
+        opacity: disabled ? 0.5 : 1,
       }}
     >
-      <CardActionArea {...getRootProps()} sx={{ p: 2 }}>
+      <CardActionArea {...getRootProps()} sx={{ p: 2 }} disabled={disabled}>
         <CardContent sx={{ textAlign: 'center', py: 4 }}>
           <input {...getInputProps()} />
 
           {/* Show different icon based on file state */}
           {file ? (
-            <CheckCircleIcon fontSize="large" color="success" />
+            <CheckCircleIcon fontSize="large" color={disabled ? 'disabled' : 'success'} />
           ) : isKey ? (
-            <VpnKey fontSize="large" color="primary" />
+            <VpnKey fontSize="large" color={disabled ? 'disabled' : 'primary'} />
           ) : (
-            <InsertDriveFile fontSize="large" color="primary" />
+            <InsertDriveFile fontSize="large" color={disabled ? 'disabled' : 'primary'} />
           )}
 
           <Typography
             variant="subtitle1"
             sx={{
               mt: 2,
-              fontWeight: file ? 'bold' : 'normal',
-              color: file ? 'success.dark' : 'text.primary',
+              fontWeight: disabled ? 'normal' : file ? 'bold' : 'normal',
+              color: disabled ? 'text.disabled' : file ? 'success.dark' : 'text.primary',
             }}
           >
             {file ? `✔ ${file.name}` : title}
@@ -167,29 +170,27 @@ const LoadWfsImagePage = () => {
           />
         </Grid>
 
-        {(deviceType === 'mlc' || deviceType === 'usb') && (
-          <Grid item xs={deviceType === 'usb' ? 6 : 12}>
-            <FileUploadCard
-              title="Select OTP File"
-              file={otpFile}
-              isKey={true}
-              getRootProps={otpDropzone.getRootProps}
-              getInputProps={otpDropzone.getInputProps}
-            />
-          </Grid>
-        )}
+        <Grid item xs={6}>
+          <FileUploadCard
+            title="Select OTP File"
+            file={otpFile}
+            isKey={true}
+            disabled={deviceType === 'plain'}
+            getRootProps={otpDropzone.getRootProps}
+            getInputProps={otpDropzone.getInputProps}
+          />
+        </Grid>
 
-        {deviceType === 'usb' && (
-          <Grid item xs={6}>
-            <FileUploadCard
-              title="Select SEEPROM File"
-              file={seepromFile}
-              isKey={true}
-              getRootProps={seepromDropzone.getRootProps}
-              getInputProps={seepromDropzone.getInputProps}
-            />
-          </Grid>
-        )}
+        <Grid item xs={6}>
+          <FileUploadCard
+            title="Select SEEPROM File"
+            file={seepromFile}
+            isKey={true}
+            disabled={deviceType !== 'usb'}
+            getRootProps={seepromDropzone.getRootProps}
+            getInputProps={seepromDropzone.getInputProps}
+          />
+        </Grid>
 
         <Grid item xs={12}>
           <Button
