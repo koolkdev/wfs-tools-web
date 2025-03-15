@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Folder, InsertDriveFile, Home as HomeIcon } from '@mui/icons-material';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
+import type { EntryType } from 'WfsLibModule';
 
 const DirectoryBrowserPage: React.FC = () => {
   const { device, module, asyncQueue } = useWfsLib();
@@ -52,20 +53,52 @@ const DirectoryBrowserPage: React.FC = () => {
       return;
     }
 
+    const typeMapping: Record<EntryType, 'directory' | 'file' | 'link'> = {
+      [module.EntryType.directory]: 'directory',
+      [module.EntryType.file]: 'file',
+      [module.EntryType.link]: 'link',
+    };
+
     const fetchDirectoryEntries = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const directory = await device.getDirectory(currentPath);
-        const details = await directory.getEntryDetails();
+        const directory = await device.getEntry(currentPath);
+
+        // Check if the entry is a directory
+        if (directory.type() !== module.EntryType.directory) {
+          throw new Error('Not a directory');
+        }
+
+        // Cast to Directory type
+        const dir = directory as typeof module.Directory.prototype;
+
+        // Get all entries in the directory
+        const entriesVector = await dir.getEntries();
+        const entryCount = entriesVector.size();
 
         // Convert entries to our desired format
-        const entryList = Object.entries(details).map(([name, detail]) => ({
-          name,
-          type: detail.type,
-          size: detail.size,
-        }));
+        const entryList = [];
+
+        for (let i = 0; i < entryCount; i++) {
+          const entry = entriesVector.get(i);
+          const entryName = entry.name();
+          const entryType = entry.type();
+
+          let size: number | undefined = undefined;
+          if (entryType === module.EntryType.file) {
+            // Cast to File type to get size
+            const fileEntry = entry as typeof module.File.prototype;
+            size = fileEntry.size();
+          }
+
+          entryList.push({
+            name: entryName,
+            type: typeMapping[entryType],
+            size,
+          });
+        }
 
         // Sort entries: directories first, then alphabetically
         entryList.sort((a, b) => {
@@ -142,7 +175,6 @@ const DirectoryBrowserPage: React.FC = () => {
         </Breadcrumbs>
       </Paper>
 
-      {/* Rest of the component remains the same */}
       {/* Directory Contents */}
       <Paper
         elevation={3}
