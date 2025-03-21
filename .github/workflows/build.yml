@@ -30,12 +30,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Setup CMake
-        uses: lukka/get-cmake@latest
-
-      - name: Install dependencies
-        run: npm ci
-
       # Create a cache key from relevant dependencies
       - name: Create WebAssembly cache key
         id: cache-key
@@ -54,6 +48,13 @@ jobs:
         with:
           path: src/assets/wasm/
           key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Setup CMake
+        if: steps.cache-wasm.outputs.cache-hit != 'true'
+        uses: lukka/get-cmake@latest
+
+      - name: Install dependencies
+        run: npm ci
 
       # Only build WebAssembly if cache miss
       - name: Setup Emscripten
