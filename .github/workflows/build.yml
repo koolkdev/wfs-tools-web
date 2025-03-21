@@ -36,29 +36,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Emscripten
-        run: npm run setup:emscripten
-
-      # Get the wfslib submodule commit SHA
-      - name: Get wfslib submodule SHA
-        id: wfslib-sha
-        run: |
-          WFSLIB_SHA=$(git -C submodules/wfslib rev-parse HEAD)
-          echo "WFSLIB_SHA=$WFSLIB_SHA" >> $GITHUB_ENV
-          echo "sha=$WFSLIB_SHA" >> $GITHUB_OUTPUT
-
       # Create a cache key from relevant dependencies
-      - name: Create cache key
+      - name: Create WebAssembly cache key
         id: cache-key
         run: |
+          WFSLIB_SHA=$(git -C submodules/wfslib rev-parse HEAD)
           BINDINGS_HASH=$(sha256sum cpp/bindings.cpp | cut -d' ' -f1)
           CMAKE_HASH=$(sha256sum CMakeLists.txt CMakePresets.json cpp/CMakeLists.txt | sha256sum | cut -d' ' -f1)
           CACHE_KEY="wasm-build-${BINDINGS_HASH:0:10}-wfslib-${WFSLIB_SHA:0:10}-cmake-${CMAKE_HASH:0:10}"
           echo "key=$CACHE_KEY" >> $GITHUB_OUTPUT
           echo "Generated cache key: $CACHE_KEY"
 
-      # Cache the WebAssembly build
-      - name: Cache WebAssembly build
+      # Cache the WebAssembly module
+      - name: Cache WebAssembly module
         id: cache-wasm
         uses: actions/cache@v3
         with:
@@ -66,6 +56,10 @@ jobs:
           key: ${{ steps.cache-key.outputs.key }}
 
       # Only build WebAssembly if cache miss
+      - name: Setup Emscripten
+        if: steps.cache-wasm.outputs.cache-hit != 'true'
+        run: npm run setup:emscripten
+
       - name: Build WebAssembly module
         if: steps.cache-wasm.outputs.cache-hit != 'true'
         run: npm run build:wasm:release
