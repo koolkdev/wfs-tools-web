@@ -1,45 +1,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Box,
-  Breadcrumbs,
-  Link,
-  CircularProgress,
-  Alert,
-  IconButton,
-  Table,
-  TableHead,
-  TableContainer,
-  TableCell,
-  TableBody,
-  TableRow,
-  Checkbox,
-  Stack,
-  Divider,
-  Button,
-  ListSubheader,
-} from '@mui/material';
-import {
-  Folder,
-  InsertDriveFile,
-  Home as HomeIcon,
-  ArrowUpward,
-  Info as InfoIcon,
-  Storage as StorageIcon,
-  AccessTime as AccessTimeIcon,
-  Person,
-  Group,
-  Download,
-  Close,
-} from '@mui/icons-material';
-import { useWfsLib } from '../services/wfslib/WfsLibProvider';
 import type { Entry, EntryType, File } from 'WfsLibModule';
+import { useWfsLib } from '../services/wfslib/WfsLibProvider';
+
+// shadcn/ui components
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+
+// Lucide icons
+import {
+  FolderIcon,
+  FileIcon,
+  HomeIcon,
+  ArrowUpIcon,
+  InfoIcon,
+  DatabaseIcon,
+  ClockIcon,
+  UserIcon,
+  UsersIcon,
+  DownloadIcon,
+  XIcon,
+} from 'lucide-react';
 
 interface EntryInfo {
   entry: Entry;
@@ -71,7 +55,6 @@ const DirectoryBrowserPage: React.FC = () => {
   }, [currentPath]);
 
   const [entries, setEntries] = useState<Array<EntryInfo>>([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<EntryInfo | null>(null);
@@ -161,138 +144,105 @@ const DirectoryBrowserPage: React.FC = () => {
   }, [currentPath, device, module, navigate, asyncQueue]);
 
   return (
-    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, px: 2 }}>
-      {/* NAV / BREADCRUMB BAR */}
-      <Paper
-        elevation={2}
-        sx={{
-          p: 2,
-          mb: 2, // margin below the nav bar
-          display: 'flex',
-          alignItems: 'center',
-          flexShrink: 0, // nav bar should not shrink
-        }}
-      >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton color="primary" onClick={() => navigate('/browse/')}>
-            <HomeIcon />
-          </IconButton>
-          <IconButton
-            color="primary"
-            onClick={() => navigate(`/browse${parentPath}`)}
-            disabled={currentPath === '/'}
-          >
-            <ArrowUpward />
-          </IconButton>
+    <div className="flex flex-col flex-1 min-h-0 px-4 gap-4">
+      {/* Navigation Bar */}
+      <div className="bg-card p-4 rounded-lg shadow-sm border flex items-center gap-2 flex-shrink-0">
+        <Button variant="outline" size="icon" onClick={() => navigate('/browse/')} title="Home">
+          <HomeIcon className="h-4 w-4" />
+        </Button>
 
-          {/* Breadcrumbs */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigate(`/browse${parentPath}`)}
+          disabled={currentPath === '/'}
+          title="Up"
+        >
+          <ArrowUpIcon className="h-4 w-4" />
+        </Button>
 
-          <Breadcrumbs maxItems={5} sx={{ ml: 1 }}>
+        {/* Breadcrumbs */}
+        <nav className="flex items-center ml-2">
+          <ol className="flex flex-wrap items-center gap-1">
             {currentPath
               .split('/')
               .filter(Boolean)
               .map((crumb, idx, arr) => (
-                <Link
-                  key={crumb}
-                  underline="hover"
-                  color={idx === arr.length - 1 ? 'text.primary' : 'inherit'}
-                  onClick={() => navigate(`/browse/${arr.slice(0, idx + 1).join('/')}`)}
-                  sx={{ cursor: 'pointer' }}
-                >
-                  {crumb}
-                </Link>
+                <React.Fragment key={crumb}>
+                  {idx > 0 && <span className="text-muted-foreground mx-1">/</span>}
+                  <li>
+                    <Button
+                      variant="link"
+                      className={
+                        idx === arr.length - 1
+                          ? 'text-primary font-medium p-0'
+                          : 'text-muted-foreground p-0'
+                      }
+                      onClick={() => navigate(`/browse/${arr.slice(0, idx + 1).join('/')}`)}
+                    >
+                      {crumb}
+                    </Button>
+                  </li>
+                </React.Fragment>
               ))}
-          </Breadcrumbs>
-        </Stack>
+          </ol>
+        </nav>
 
-        <Box sx={{ flexGrow: 1 }} />
-        <Stack direction="row" spacing={1}>
-          {/* X button */}
-          <IconButton color="primary" onClick={() => navigate('/load')}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </Paper>
+        <div className="flex-1" />
 
-      {/* MAIN CONTENT AREA: table (left) + preview (right) */}
-      <Box
-        sx={{
-          flex: 1, // fill leftover vertical space
-          display: 'flex', // horizontal layout: table on left, preview on right
-          gap: 2, // space between them
-          overflow: 'hidden', // so each child can scroll internally
-          minHeight: 0,
-        }}
-      >
+        <Button variant="ghost" size="icon" onClick={() => navigate('/load')} title="Close">
+          <XIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 gap-4 min-h-0 overflow-hidden">
         {/* Directory Contents */}
-        <Paper
-          elevation={3}
-          sx={{
-            flex: 1, // take all remaining vertical space
-            minHeight: 0, // critical for flex scroll to work
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
+        <div className="bg-card rounded-lg shadow-sm border flex-1 flex flex-col min-h-0">
           {loading ? (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                mt: 4,
-              }}
-            >
-              <CircularProgress />
-            </Box>
+            <div className="flex justify-center items-center h-full">
+              <div className="animate-spin h-8 w-8 border-4 rounded-full border-primary border-t-transparent" />
+            </div>
           ) : error ? (
-            <Alert severity="error" sx={{ m: 2 }}>
-              {error}
+            <Alert variant="destructive" className="m-4">
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : (
-            <TableContainer
-              component={Paper}
-              sx={{
-                flex: 1,
-                minHeight: 0, // critical
-                overflow: 'auto', // scrollbar on overflow
-              }}
-            >
-              <Table stickyHeader size="small">
-                <TableHead>
+            <div className="overflow-auto flex-1">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell padding="checkbox">
+                    <TableCell className="w-[40px]">
                       <Checkbox />
                     </TableCell>
-                    <TableCell align="center" sx={{ width: 50 }}></TableCell>
+                    <TableCell className="w-[40px]"></TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Size</TableCell>
                     <TableCell>Modified</TableCell>
                   </TableRow>
-                </TableHead>
+                </TableHeader>
                 <TableBody>
                   {entries.map(entry => (
                     <TableRow
                       key={entry.name}
-                      hover
+                      className="cursor-pointer hover:bg-muted/50"
                       onClick={() =>
                         entry.type === 'directory'
                           ? navigate(`/browse${currentPath}/${entry.name}`)
                           : setSelectedFile(entry)
                       }
-                      sx={{ cursor: 'pointer' }}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox />
+                      <TableCell>
+                        <Checkbox onClick={e => e.stopPropagation()} />
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell>
                         {entry.type === 'directory' ? (
-                          <Folder color="primary" />
+                          <FolderIcon className="h-4 w-4 text-blue-500" />
                         ) : (
-                          <InsertDriveFile />
+                          <FileIcon className="h-4 w-4 text-gray-500" />
                         )}
                       </TableCell>
-                      <TableCell>{entry.name}</TableCell>
+                      <TableCell className="font-medium">{entry.name}</TableCell>
                       <TableCell>
                         {entry.size !== undefined ? `${entry.size} bytes` : '-'}
                       </TableCell>
@@ -301,111 +251,114 @@ const DirectoryBrowserPage: React.FC = () => {
                   ))}
                 </TableBody>
               </Table>
-            </TableContainer>
+            </div>
           )}
-        </Paper>
+        </div>
 
-        {/* RIGHT: DETAILS / PREVIEW PANE */}
-        <Paper
-          variant="outlined"
-          sx={{
-            flexShrink: 0,
-            width: 350,
-            display: 'flex',
-            flexDirection: 'column',
-            p: 2,
-            minHeight: 0,
-            overflowY: 'auto', // let preview scroll if it’s tall
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Details / Preview
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
+        {/* Details / Preview Pane */}
+        <div className="bg-card rounded-lg shadow-sm border p-4 flex-shrink-0 w-80 overflow-y-auto">
+          <h3 className="text-lg font-medium mb-2">Details / Preview</h3>
+          <Separator className="mb-4" />
 
           {selectedFile ? (
             <>
-              <List dense subheader={<ListSubheader disableSticky>File Information</ListSubheader>}>
-                <ListItem>
-                  <ListItemIcon>
-                    <InsertDriveFile />
-                  </ListItemIcon>
-                  <ListItemText primary="Name" secondary={selectedFile.name} />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <InfoIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Type" secondary={selectedFile.type.toUpperCase()} />
-                </ListItem>
-                {selectedFile.size !== undefined && (
-                  <ListItem>
-                    <ListItemIcon>
-                      <StorageIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Size" secondary={`${selectedFile.size} bytes`} />
-                  </ListItem>
-                )}
-                <ListItem>
-                  <ListItemIcon>
-                    <Group />
-                  </ListItemIcon>
-                  <ListItemText primary="Group" secondary={selectedFile.group} />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <Person />
-                  </ListItemIcon>
-                  <ListItemText primary="Owner" secondary={selectedFile.owner} />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <AccessTimeIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Modified" secondary={selectedFile.modificationTime} />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <AccessTimeIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Created" secondary={selectedFile.creationTime} />
-                </ListItem>
-              </List>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">File Information</h4>
 
-              <Divider sx={{ my: 2 }} />
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <FileIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Name</p>
+                      <p className="text-sm text-muted-foreground">{selectedFile.name}</p>
+                    </div>
+                  </div>
 
-              <Stack direction="row" spacing={1} justifyContent="flex-end">
-                <Button
-                  variant="contained"
-                  startIcon={<Download />}
-                  color="success"
-                  onClick={() => {
-                    const fileStream = (selectedFile.entry as File).stream();
-                    const fileData = new Uint8Array(selectedFile.size!);
-                    fileStream.read(selectedFile.size!, (data: Uint8Array) => {
-                      fileData.set(data);
-                    });
-                    const blob = new Blob([fileData], { type: 'application/octet-stream' });
-                    const url = URL.createObjectURL(blob);
-                    window.open(url, '_blank');
-                  }}
-                >
-                  Download
-                </Button>
-                {/*<Button variant="contained" startIcon={<Edit />}>
-                  Edit
-                </Button>
-                <Button variant="outlined" color="error" startIcon={<Delete />}>
-                  Delete
-                </Button>*/}
-              </Stack>
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <InfoIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Type</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedFile.type.toUpperCase()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedFile.size !== undefined && (
+                    <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                      <DatabaseIcon className="h-4 w-4" />
+                      <div>
+                        <p className="text-sm font-medium">Size</p>
+                        <p className="text-sm text-muted-foreground">{selectedFile.size} bytes</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <UsersIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Group</p>
+                      <p className="text-sm text-muted-foreground">{selectedFile.group}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <UserIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Owner</p>
+                      <p className="text-sm text-muted-foreground">{selectedFile.owner}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <ClockIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Modified</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedFile.modificationTime}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[24px_1fr] gap-2 items-center">
+                    <ClockIcon className="h-4 w-4" />
+                    <div>
+                      <p className="text-sm font-medium">Created</p>
+                      <p className="text-sm text-muted-foreground">{selectedFile.creationTime}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-end">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-1"
+                    onClick={() => {
+                      const fileStream = (selectedFile.entry as File).stream();
+                      const fileData = new Uint8Array(selectedFile.size!);
+                      fileStream.read(selectedFile.size!, (data: Uint8Array) => {
+                        fileData.set(data);
+                      });
+                      const blob = new Blob([fileData], { type: 'application/octet-stream' });
+                      const url = URL.createObjectURL(blob);
+                      window.open(url, '_blank');
+                    }}
+                  >
+                    <DownloadIcon className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </div>
             </>
           ) : (
-            <Typography>Select a file or folder to see details.</Typography>
+            <p className="text-muted-foreground">Select a file or folder to see details.</p>
           )}
-        </Paper>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 

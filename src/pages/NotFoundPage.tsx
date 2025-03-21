@@ -1,35 +1,24 @@
 import React from 'react';
-import { Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      sx={{ height: '100%', py: 4 }}
-    >
-      <Typography variant="h1" color="error" gutterBottom>
-        404
-      </Typography>
+    <div className="flex flex-col items-center justify-center text-center h-full py-10">
+      <h1 className="text-6xl font-bold text-destructive mb-4">404</h1>
 
-      <Typography variant="h5" gutterBottom>
-        Page Not Found
-      </Typography>
+      <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
 
-      <Typography variant="body1" paragraph>
+      <p className="text-muted-foreground max-w-md mb-8">
         The page you are looking for might have been removed or is temporarily unavailable.
-      </Typography>
+      </p>
 
-      <Button variant="contained" color="primary" onClick={() => navigate('/')} sx={{ mt: 2 }}>
+      <Button onClick={() => navigate('/')} className="mt-2">
         Go to Home
       </Button>
-    </Box>
+    </div>
   );
 };
 

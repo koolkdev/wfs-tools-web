@@ -4,6 +4,7 @@ import { createMemoryRouter, Navigate, RouterProvider } from 'react-router-dom';
 // Layouts and Protected Routes
 import AppLayout from '../components/layout/AppLayout';
 import EnsureWfsDeviceRoute from '../components/layout/EnsureWfsDeviceRoute';
+import RouterErrorPage from '@/components/common/RouterrErrorPage';
 
 // Pages
 const LoadWfsImagePage = React.lazy(() => import('../pages/LoadWfsImagePage'));
@@ -16,6 +17,7 @@ const AppRouter: React.FC = () => {
     {
       path: '/',
       element: <AppLayout />,
+      errorElement: <RouterErrorPage />, // Add this
       children: [
         {
           index: true,
