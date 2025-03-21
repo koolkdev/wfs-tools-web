@@ -30,16 +30,39 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      # Create a cache key from relevant dependencies
+      - name: Create WebAssembly cache key
+        id: cache-key
+        run: |
+          WFSLIB_SHA=$(git -C submodules/wfslib rev-parse HEAD)
+          BINDINGS_HASH=$(sha256sum cpp/bindings.cpp | cut -d' ' -f1)
+          CMAKE_HASH=$(sha256sum CMakeLists.txt CMakePresets.json cpp/CMakeLists.txt | sha256sum | cut -d' ' -f1)
+          CACHE_KEY="wasm-build-${BINDINGS_HASH:0:10}-wfslib-${WFSLIB_SHA:0:10}-cmake-${CMAKE_HASH:0:10}"
+          echo "key=$CACHE_KEY" >> $GITHUB_OUTPUT
+          echo "Generated cache key: $CACHE_KEY"
+
+      # Cache the WebAssembly module
+      - name: Cache WebAssembly module
+        id: cache-wasm
+        uses: actions/cache@v3
+        with:
+          path: src/assets/wasm/
+          key: ${{ steps.cache-key.outputs.key }}
+
       - name: Setup CMake
+        if: steps.cache-wasm.outputs.cache-hit != 'true'
         uses: lukka/get-cmake@latest
 
       - name: Install dependencies
         run: npm ci
 
+      # Only build WebAssembly if cache miss
       - name: Setup Emscripten
+        if: steps.cache-wasm.outputs.cache-hit != 'true'
         run: npm run setup:emscripten
 
       - name: Build WebAssembly module
+        if: steps.cache-wasm.outputs.cache-hit != 'true'
         run: npm run build:wasm:release
 
       - name: Build frontend
