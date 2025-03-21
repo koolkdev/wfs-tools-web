@@ -10,7 +10,15 @@ const AppLayout: React.FC = () => {
   const { themeMode, toggleTheme } = useTheme();
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', minWidth: '100vw' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 500,
+        height: '100vh',
+        maxHeight: '100vh',
+      }}
+    >
       <AppBar position="static">
         <Toolbar>
           <Box
@@ -56,10 +64,23 @@ const AppLayout: React.FC = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-
-      <Container component="main" sx={{ flexGrow: 1, mt: 4, mb: 4 }}>
-        <Outlet /> {/* This is where child routes will be rendered */}
-      </Container>
+      {/* Content area for child routes (DirectoryBrowserPage, etc.) */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Container
+          disableGutters
+          maxWidth={false}
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            mt: 2,
+            mb: 2,
+          }}
+        >
+          <Outlet />
+        </Container>
+      </Box>
 
       <Box
         component="footer"

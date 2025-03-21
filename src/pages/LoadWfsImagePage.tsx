@@ -43,31 +43,63 @@ const FileUploadCard = ({
       variant="outlined"
       sx={{
         borderStyle: 'dashed',
-        borderColor: disabled ? 'divider' : file ? 'success.main' : 'primary.main', // Green when file is set
-        backgroundColor: 'background.paper', // Light green when set
+        borderColor: disabled ? 'divider' : file ? 'success.main' : 'primary.main',
+        backgroundColor: 'background.paper',
         transition: 'background-color 0.3s ease, border-color 0.3s ease',
         opacity: disabled ? 0.5 : 1,
+        height: '100%', // Ensure consistent height
       }}
     >
-      <CardActionArea {...getRootProps()} sx={{ p: 2 }} disabled={disabled}>
-        <CardContent sx={{ textAlign: 'center', py: 4 }}>
+      <CardActionArea {...getRootProps()} sx={{ height: '100%' }} disabled={disabled}>
+        <CardContent
+          sx={{
+            textAlign: 'center',
+            py: { xs: 2, sm: 3 }, // Responsive padding vertical
+            px: { xs: 1, sm: 2 }, // Responsive padding horizontal
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
           <input {...getInputProps()} />
 
           {/* Show different icon based on file state */}
           {file ? (
-            <CheckCircleIcon fontSize="large" color={disabled ? 'disabled' : 'success'} />
+            <CheckCircleIcon
+              sx={{
+                fontSize: { xs: '1.8rem', sm: '2.2rem' },
+              }}
+              color={disabled ? 'disabled' : 'success'}
+            />
           ) : isKey ? (
-            <VpnKey fontSize="large" color={disabled ? 'disabled' : 'primary'} />
+            <VpnKey
+              sx={{
+                fontSize: { xs: '1.8rem', sm: '2.2rem' },
+              }}
+              color={disabled ? 'disabled' : 'primary'}
+            />
           ) : (
-            <InsertDriveFile fontSize="large" color={disabled ? 'disabled' : 'primary'} />
+            <InsertDriveFile
+              sx={{
+                fontSize: { xs: '1.8rem', sm: '2.2rem' },
+              }}
+              color={disabled ? 'disabled' : 'primary'}
+            />
           )}
 
           <Typography
-            variant="subtitle1"
+            variant="subtitle2"
             sx={{
-              mt: 2,
+              mt: { xs: 1, sm: 2 },
               fontWeight: disabled ? 'normal' : file ? 'bold' : 'normal',
               color: disabled ? 'text.disabled' : file ? 'success.dark' : 'text.primary',
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: '100%',
             }}
           >
             {file ? file.name : title}
@@ -77,7 +109,6 @@ const FileUploadCard = ({
     </Card>
   );
 };
-
 const LoadWfsImagePage = () => {
   const navigate = useNavigate();
   const { createDevice } = useWfsLib();

@@ -67,7 +67,7 @@ declare module 'WfsLibModule' {
   export class QuotaArea {
     blockSize(): number;
     blocksCount(): number;
-    freeBlocksCount(): number;
+    freeBlocksCount(): Promise<number>;
   }
 
   // Directory class
