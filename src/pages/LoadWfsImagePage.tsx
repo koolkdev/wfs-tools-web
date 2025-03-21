@@ -1,114 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Typography,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  Card,
-  CardActionArea,
-  CardContent,
-  Paper,
-} from '@mui/material';
-import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
-import VpnKey from '@mui/icons-material/VpnKey';
-
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-
-import DeviceSelection, { DeviceType } from '../components/common/DeviceSelection';
-
+import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { useWfsLib } from '../services/wfslib/WfsLibProvider';
-import { useNavigate } from 'react-router-dom';
-const FileUploadCard = ({
-  title,
-  file,
-  isKey,
-  getRootProps,
-  getInputProps,
-  disabled,
-}: {
-  title: string;
-  file: File | null;
-  isKey: boolean;
-  getRootProps: any;
-  getInputProps: any;
-  disabled?: boolean;
-}) => {
-  return (
-    <Card
-      variant="outlined"
-      sx={{
-        borderStyle: 'dashed',
-        borderColor: disabled ? 'divider' : file ? 'success.main' : 'primary.main',
-        backgroundColor: 'background.paper',
-        transition: 'background-color 0.3s ease, border-color 0.3s ease',
-        opacity: disabled ? 0.5 : 1,
-        height: '100%', // Ensure consistent height
-      }}
-    >
-      <CardActionArea {...getRootProps()} sx={{ height: '100%' }} disabled={disabled}>
-        <CardContent
-          sx={{
-            textAlign: 'center',
-            py: { xs: 2, sm: 3 }, // Responsive padding vertical
-            px: { xs: 1, sm: 2 }, // Responsive padding horizontal
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-          }}
-        >
-          <input {...getInputProps()} />
 
-          {/* Show different icon based on file state */}
-          {file ? (
-            <CheckCircleIcon
-              sx={{
-                fontSize: { xs: '1.8rem', sm: '2.2rem' },
-              }}
-              color={disabled ? 'disabled' : 'success'}
-            />
-          ) : isKey ? (
-            <VpnKey
-              sx={{
-                fontSize: { xs: '1.8rem', sm: '2.2rem' },
-              }}
-              color={disabled ? 'disabled' : 'primary'}
-            />
-          ) : (
-            <InsertDriveFile
-              sx={{
-                fontSize: { xs: '1.8rem', sm: '2.2rem' },
-              }}
-              color={disabled ? 'disabled' : 'primary'}
-            />
-          )}
+// shadcn components
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 
-          <Typography
-            variant="subtitle2"
-            sx={{
-              mt: { xs: 1, sm: 2 },
-              fontWeight: disabled ? 'normal' : file ? 'bold' : 'normal',
-              color: disabled ? 'text.disabled' : file ? 'success.dark' : 'text.primary',
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: '100%',
-            }}
-          >
-            {file ? file.name : title}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
-};
+// Custom components
+import { FileUploadCard } from '@/components/file-upload-card';
+import { DeviceSelection, DeviceType } from '@/components/device-selection';
+
 const LoadWfsImagePage = () => {
   const navigate = useNavigate();
   const { createDevice } = useWfsLib();
@@ -119,6 +22,7 @@ const LoadWfsImagePage = () => {
   const [seepromFile, setSeepromFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleDrop = useCallback(
     (setter: React.Dispatch<React.SetStateAction<File | null>>) => (files: File[]) => {
@@ -159,116 +63,102 @@ const LoadWfsImagePage = () => {
     if (!wfsFile) return;
     setLoading(true);
     setError(null);
+
+    // Simulate progress for better UX
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 95) {
+          clearInterval(interval);
+          return prev;
+        }
+        return prev + 5;
+      });
+    }, 200);
+
     try {
       await createDevice(wfsFile, deviceType, otpFile || undefined, seepromFile || undefined);
+      clearInterval(interval);
+      setProgress(100);
       navigate('/browse/');
     } catch (error) {
+      clearInterval(interval);
+      setProgress(0);
       const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
       setError(errorMsg);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 5 }}>
-      <Paper
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          boxShadow: 3,
-          backgroundColor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Typography
-          variant="h4"
-          gutterBottom
-          align="center"
-          sx={{
-            color: 'primary.main',
-            fontWeight: 'bold',
-            letterSpacing: 1,
-            textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-            mb: 2,
-          }}
-        >
-          Welcome!
-        </Typography>
-        <Typography
-          variant="body1"
-          align="center"
-          sx={{ mb: 3, color: 'text.secondary', fontSize: '0.9rem' }}
-        >
-          Please select your device type and add the required files below.
-        </Typography>
+    <div className="container py-8 max-w-md mx-auto">
+      <div className="bg-card rounded-lg shadow-lg border p-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-primary mb-2">Welcome!</h1>
+          <p className="text-muted-foreground text-sm">
+            Please select your device type and add the required files below.
+          </p>
+        </div>
 
         <DeviceSelection
           selectedValue={deviceType}
-          onChange={value => setDeviceType(value as 'plain' | 'mlc' | 'usb')}
+          onChange={value => setDeviceType(value as DeviceType)}
         />
 
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <FileUploadCard
-              title="Select WFS Image"
-              file={wfsFile}
-              isKey={false}
-              getRootProps={wfsDropzone.getRootProps}
-              getInputProps={wfsDropzone.getInputProps}
-            />
-          </Grid>
+        <div className="grid grid-cols-1 gap-4 mb-4">
+          <FileUploadCard
+            title="Select WFS Image"
+            file={wfsFile}
+            isKey={false}
+            getRootProps={wfsDropzone.getRootProps}
+            getInputProps={wfsDropzone.getInputProps}
+          />
+        </div>
 
-          <Grid item xs={6}>
-            <FileUploadCard
-              title="Select OTP File"
-              file={otpFile}
-              isKey={true}
-              disabled={deviceType === 'plain'}
-              getRootProps={otpDropzone.getRootProps}
-              getInputProps={otpDropzone.getInputProps}
-            />
-          </Grid>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <FileUploadCard
+            title="Select OTP File"
+            file={otpFile}
+            isKey={true}
+            disabled={deviceType === 'plain'}
+            getRootProps={otpDropzone.getRootProps}
+            getInputProps={otpDropzone.getInputProps}
+          />
 
-          <Grid item xs={6}>
-            <FileUploadCard
-              title="Select SEEPROM File"
-              file={seepromFile}
-              isKey={true}
-              disabled={deviceType !== 'usb'}
-              getRootProps={seepromDropzone.getRootProps}
-              getInputProps={seepromDropzone.getInputProps}
-            />
-          </Grid>
+          <FileUploadCard
+            title="Select SEEPROM File"
+            file={seepromFile}
+            isKey={true}
+            disabled={deviceType !== 'usb'}
+            getRootProps={seepromDropzone.getRootProps}
+            getInputProps={seepromDropzone.getInputProps}
+          />
+        </div>
 
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              fullWidth
-              disabled={!isLoadEnabled()}
-              onClick={handleLoadImage}
-              startIcon={loading && <CircularProgress size={20} color="inherit" />}
-            >
-              {loading ? 'Loading...' : 'Load Image'}
-            </Button>
-          </Grid>
-        </Grid>
+        {loading && <Progress value={progress} className="mb-4" />}
 
-        <Box sx={{ mt: 3 }}>
-          <Alert severity="info">
-            All files are processed locally in your browser - no data is uploaded to any server.{' '}
+        <Button
+          className="w-full mb-6"
+          size="lg"
+          disabled={!isLoadEnabled()}
+          onClick={handleLoadImage}
+        >
+          {loading ? 'Loading...' : 'Load Image'}
+        </Button>
+
+        <Alert variant="default" className="mb-2">
+          <AlertDescription>
+            All files are processed locally in your browser - no data is uploaded to any server.
+          </AlertDescription>
+        </Alert>
+
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
-        </Box>
-
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
-          <Alert severity="error" onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        </Snackbar>
-      </Paper>
-    </Container>
+        )}
+      </div>
+    </div>
   );
 };
 
