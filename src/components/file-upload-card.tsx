@@ -22,43 +22,40 @@ export function FileUploadCard({
   return (
     <Card
       className={cn(
-        'border-2 border-dashed transition-all duration-300 h-full',
+        'border-2 border-dashed transition-all duration-300 h-full cursor-pointer rounded-md ',
         disabled
-          ? 'opacity-50 border-muted'
+          ? 'opacity-50 border-muted cursor-not-allowed'
           : file
           ? 'border-green-500'
           : 'border-primary hover:border-primary/80',
+        !disabled && 'hover:bg-muted/50',
       )}
+      {...(disabled ? {} : getRootProps())}
     >
-      <div
-        {...getRootProps()}
-        className={cn('h-full w-full cursor-pointer rounded-md', disabled && 'cursor-not-allowed')}
-      >
-        <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full">
-          <input {...getInputProps()} />
+      <CardContent className="flex flex-col items-center justify-center p-4 text-center h-full">
+        {!disabled && <input {...getInputProps()} />}
 
-          {file ? (
-            <CheckCircle2 className="h-7 w-7 mb-2" color={disabled ? 'gray' : 'green'} />
-          ) : isKey ? (
-            <KeyRound className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
-          ) : (
-            <FileIcon className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
+        {file ? (
+          <CheckCircle2 className="h-7 w-7 mb-2" color={disabled ? 'gray' : 'green'} />
+        ) : isKey ? (
+          <KeyRound className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
+        ) : (
+          <FileIcon className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
+        )}
+
+        <p
+          className={cn(
+            'text-sm truncate max-w-full',
+            disabled
+              ? 'text-muted-foreground'
+              : file
+              ? 'text-green-700 dark:text-green-500 font-medium'
+              : 'text-foreground',
           )}
-
-          <p
-            className={cn(
-              'text-sm truncate max-w-full',
-              disabled
-                ? 'text-muted-foreground'
-                : file
-                ? 'text-green-700 dark:text-green-500 font-medium'
-                : 'text-foreground',
-            )}
-          >
-            {file ? file.name : title}
-          </p>
-        </CardContent>
-      </div>
+        >
+          {file ? file.name : title}
+        </p>
+      </CardContent>
     </Card>
   );
 }

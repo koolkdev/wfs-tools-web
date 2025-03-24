@@ -6,11 +6,11 @@ import { useWfsLib } from '../services/wfslib/WfsLibProvider';
 // shadcn components
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
 
 // Custom components
 import { FileUploadCard } from '@/components/file-upload-card';
 import { DeviceSelection, DeviceType } from '@/components/device-selection';
+import { Loader2 } from 'lucide-react';
 
 const LoadWfsImagePage = () => {
   const navigate = useNavigate();
@@ -135,15 +135,20 @@ const LoadWfsImagePage = () => {
           />
         </div>
 
-        {loading && <Progress value={progress} className="mb-4" />}
-
         <Button
           className="w-full mb-6"
           size="lg"
           disabled={!isLoadEnabled()}
           onClick={handleLoadImage}
         >
-          {loading ? 'Loading...' : 'Load Image'}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            'Load Image'
+          )}
         </Button>
 
         <Alert variant="default" className="mb-2">

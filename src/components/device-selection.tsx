@@ -64,7 +64,7 @@ export function DeviceSelection({
               )}
               onClick={() => handleSelect(value)}
             >
-              <CardContent className="p-4 text-center">
+              <CardContent className="p-1 text-center">
                 <Icon
                   className={cn(
                     'h-8 w-8 mx-auto mb-2',
