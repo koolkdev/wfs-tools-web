@@ -22,7 +22,6 @@ const LoadWfsImagePage = () => {
   const [seepromFile, setSeepromFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   const handleDrop = useCallback(
     (setter: React.Dispatch<React.SetStateAction<File | null>>) => (files: File[]) => {
@@ -64,25 +63,10 @@ const LoadWfsImagePage = () => {
     setLoading(true);
     setError(null);
 
-    // Simulate progress for better UX
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 5;
-      });
-    }, 200);
-
     try {
       await createDevice(wfsFile, deviceType, otpFile || undefined, seepromFile || undefined);
-      clearInterval(interval);
-      setProgress(100);
       navigate('/browse/');
     } catch (error) {
-      clearInterval(interval);
-      setProgress(0);
       const errorMsg = error instanceof Error ? error.message : 'An error occurred during loading.';
       setError(errorMsg);
     } finally {
