@@ -12,7 +12,7 @@ const AppLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-[500px] h-screen max-h-screen">
       {/* Header */}
-      <header className="bg-slate-200 dark:bg-slate-900 px-4 py-2 shadow-sm">
+      <header className="bg-secondary/50 px-4 py-2 shadow-sm">
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center">
             <img

@@ -26,7 +26,7 @@ export function FileUploadCard({
         disabled
           ? 'opacity-50 border-muted cursor-not-allowed'
           : file
-          ? 'border-green-500'
+          ? 'border-emerald-500 dark:border-green-700'
           : 'border-primary hover:border-primary/80',
         !disabled && 'hover:bg-muted/50',
       )}
@@ -36,11 +36,15 @@ export function FileUploadCard({
         {!disabled && <input {...getInputProps()} />}
 
         {file ? (
-          <CheckCircle2 className="h-7 w-7 mb-2" color={disabled ? 'gray' : 'green'} />
+          <CheckCircle2
+            className={`h-7 w-7 mb-2 ${
+              disabled ? 'text-gray-400' : 'text-emerald-500 dark:text-green-700'
+            }`}
+          />
         ) : isKey ? (
-          <KeyRound className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
+          <KeyRound className={`h-7 w-7 mb-2 ${disabled ? 'text-gray-400' : 'text-blue-500'}`} />
         ) : (
-          <FileIcon className="h-7 w-7 mb-2" color={disabled ? 'gray' : '#0072CE'} />
+          <FileIcon className={`h-7 w-7 mb-2 ${disabled ? 'text-gray-400' : 'text-blue-500'}`} />
         )}
 
         <p
@@ -49,7 +53,7 @@ export function FileUploadCard({
             disabled
               ? 'text-muted-foreground'
               : file
-              ? 'text-green-700 dark:text-green-500 font-medium'
+              ? 'text-emerald-700 dark:text-green-500 font-medium'
               : 'text-foreground',
           )}
         >

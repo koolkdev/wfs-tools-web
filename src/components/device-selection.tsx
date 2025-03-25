@@ -60,7 +60,7 @@ export function DeviceSelection({
               key={value}
               className={cn(
                 'cursor-pointer border transition-colors transition-shadow',
-                isSelected ? 'border-primary bg-primary/5 shadow' : 'hover:bg-muted/50',
+                isSelected ? 'border-primary bg-primary/15 shadow' : 'hover:bg-muted/50',
               )}
               onClick={() => handleSelect(value)}
             >

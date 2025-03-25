@@ -237,9 +237,9 @@ const DirectoryBrowserPage: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         {entry.type === 'directory' ? (
-                          <FolderIcon className="h-4 w-4 text-blue-500" />
+                          <FolderIcon className="h-4 w-4" />
                         ) : (
-                          <FileIcon className="h-4 w-4 text-gray-500" />
+                          <FileIcon className="h-4 w-4" />
                         )}
                       </TableCell>
                       <TableCell className="font-medium">{entry.name}</TableCell>
