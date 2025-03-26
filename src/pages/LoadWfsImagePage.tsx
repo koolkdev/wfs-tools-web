@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 // Custom components
 import { FileUploadCard } from '@/components/file-upload-card';
 import { DeviceSelection, DeviceType } from '@/components/device-selection';
-import { Loader2 } from 'lucide-react';
+import { Info, Loader2 } from 'lucide-react';
 
 const LoadWfsImagePage = () => {
   const navigate = useNavigate();
@@ -135,7 +135,8 @@ const LoadWfsImagePage = () => {
           )}
         </Button>
 
-        <Alert variant="default" className="mb-2">
+        <Alert variant="default" className="mb-2 rounded bg-secondary/30">
+          <Info className="!text-primary" />
           <AlertDescription>
             All files are processed locally in your browser - no data is uploaded to any server.
           </AlertDescription>

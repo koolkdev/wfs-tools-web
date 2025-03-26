@@ -8,7 +8,7 @@ const AppRouter = lazy(() => import('./router/AppRouter'));
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="wfs-tools-theme">
+    <ThemeProvider storageKey="wfs-tools-theme">
       <ErrorBoundary>
         <Suspense fallback={<LoadingScreen />}>
           <WfsLibProvider>
