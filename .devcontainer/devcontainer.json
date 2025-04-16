@@ -1,0 +1,8 @@
+{
+	"name": "Node.js & TypeScript",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"forwardPorts": [4173, 5173],
+	"postCreateCommand": "git submodule init && git submodule update && npm install && npm run setup:emscripten && npm run build:wasm && npm run dev"
+}
